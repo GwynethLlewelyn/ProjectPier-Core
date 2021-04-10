@@ -10,16 +10,16 @@
   *
   * @param_string $load_class_name
   */
-  function __autoload($load_class_name) {
+  spl_autoload_register(function ($load_class_name) {  // how to do it in PHP 5.3+ (gwyneth 20210410)
     static $loader = null;
     $class_name = strtoupper($load_class_name);
-    
+
     // Try to get this data from index...
-    if (isset($GLOBALS[AutoLoader::GLOBAL_VAR]) && 
+    if (isset($GLOBALS[AutoLoader::GLOBAL_VAR]) &&
       isset($GLOBALS[AutoLoader::GLOBAL_VAR][$class_name])) {
       return include $GLOBALS[AutoLoader::GLOBAL_VAR][$class_name];
     } // if
-    
+
     if (!$loader) {
       $loader = new AutoLoader();
       $loader->addDir(ROOT . '/application');
@@ -27,14 +27,15 @@
       $loader->addDir(ROOT . '/library');
       $loader->setIndexFilename(ROOT . '/cache/autoloader.php');
     } // if
-    
+
     try {
       $loader->loadClass($class_name);
     } catch(Exception $e) {
       die('Exception in AutoLoader: ' . $e->__toString());
     } // try
-  } // __autoload
-  
+  }
+  ); // spl_autoload_register
+
   /**
   * ProjectPier shutdown function
   *
@@ -52,7 +53,7 @@
     }
     if (ob_get_length()) ob_end_flush();
   } // __shutdown
-  
+
   /**
   * This function will be used as error handler for production
   *
@@ -71,10 +72,10 @@
     if ($code == 2048 || error_reporting() == 0) {
       return;
     } // if
-    
+
     Logger::log("Error: $message in '$file' on line $line (error code: $code)", Logger::ERROR);
   } // __production_error_handler
-  
+
   /**
   * This function will be used as exception handler in production environment
   *
@@ -88,11 +89,11 @@
   // ---------------------------------------------------
   //  Get URL
   // ---------------------------------------------------
-  
+
   /**
   * Return an application URL
-  * 
-  * If $include_project_id variable is present active_project variable will be added to the list of params if we have a 
+  *
+  * If $include_project_id variable is present active_project variable will be added to the list of params if we have a
   * project selected (active_project() function returns valid project instance)
   *
   * @param string $controller_name
@@ -109,9 +110,9 @@
     if (!is_array($params) && !is_null($params)) {
       $params = array('id' => $params);
     } // if
-    
+
     $url_params = array('c=' . $controller, 'a=' . $action);
-    
+
     if ($include_project_id) {
       if (function_exists('active_project') && (active_project() instanceof Project)) {
         if (!(is_array($params) && isset($params['active_project']))) {
@@ -119,7 +120,7 @@
         } // if
       } // if
     } // if
-    
+
     // defeat caches
     $url_params[]=time();
     if (isset($_REQUEST['trace'])) {
@@ -135,18 +136,18 @@
         } // if
       } // foreach
     } // if
-    
+
     if (trim($anchor) <> '') {
       $anchor = '#' . $anchor;
     } // if
-    
+
     return with_slash(ROOT_URL) . 'index.php?' . implode($separator, $url_params) . $anchor;
   } // get_url
-  
+
   // ---------------------------------------------------
   //  Product
   // ---------------------------------------------------
-  
+
   /**
   * Return product name. This is a wrapper function that abstracts the product name
   *
@@ -156,7 +157,7 @@
   function product_name() {
     return PRODUCT_NAME;
   } // product_name
-  
+
   /**
   * Return product version, wrapper function.
   *
@@ -167,7 +168,7 @@
     // 0.6 is the last version that comes without PRODUCT_VERSION constant that is set up
     return defined('PRODUCT_VERSION') ? PRODUCT_VERSION : '0.8.0';
   } // product_version
-  
+
   /**
   * Returns product signature (name and version). If user is not logged in and
   * is not member of owner company he will see only product name
@@ -191,11 +192,11 @@
       return lang('footer powered', 'http://www.ProjectPier.org/', clean(product_name()));
     } // if
   } // product_signature
-  
+
   // ---------------------------------------------------
   //  Request, routes replacement methods
   // ---------------------------------------------------
-  
+
   /**
   * Return matched request controller
   *
@@ -207,7 +208,7 @@
     $controller = trim(array_var($_GET, 'c', DEFAULT_CONTROLLER));
     return $controller && is_valid_function_name($controller) ? $controller : DEFAULT_CONTROLLER;
   } // request_controller
-  
+
   /**
   * Return matched request action
   *
@@ -219,7 +220,7 @@
     $action = trim(array_var($_GET, 'a', DEFAULT_ACTION));
     return $action && is_valid_function_name($action) ? $action : DEFAULT_ACTION;
   } // request_action
-  
+
   // ---------------------------------------------------
   //  Controllers and stuff
   // ---------------------------------------------------
@@ -233,7 +234,7 @@
   * @return null
   */
   function prepare_company_website_controller(PageController $controller, $layout = 'dashboard') {
-    
+
     // If we don't have logged user prepare referer params and redirect user to login page
     if (!(logged_user() instanceof User)) {
       $ref_params = array();
@@ -243,7 +244,7 @@
       trace(__FILE__, 'prepare_company_website_controller(): not logged in, redirect');
       $controller->redirectTo('access', 'login', $ref_params);
     } // if
-    
+
     $controller->setLayout($layout);
     $controller->addHelper('breadcrumbs');
     $controller->addHelper('pageactions');
@@ -252,7 +253,7 @@
     $controller->addHelper('company_website');
     $controller->addHelper('project_website');
   } // prepare_company_website_controller
-  
+
   // ---------------------------------------------------
   //  Company website interface
   // ---------------------------------------------------
@@ -267,7 +268,7 @@
   function owner_company() {
     return CompanyWebsite::instance()->getCompany();
   } // owner_company
-  
+
   /**
   * Return logged user if we are on company website
   *
@@ -278,7 +279,7 @@
   function logged_user() {
     return CompanyWebsite::instance()->getLoggedUser();
   } // logged_user
-  
+
   /**
   * Return active project if we are on company website
   *
@@ -289,11 +290,11 @@
   function active_project() {
     return CompanyWebsite::instance()->getProject();
   } // active_project
-  
+
   // ---------------------------------------------------
   //  Config interface
   // ---------------------------------------------------
-  
+
   /**
   * Return config option value
   *
@@ -305,7 +306,7 @@
   function config_option($option, $default = null) {
     return ConfigOptions::getOptionValue($option, $default);
   } // config_option
-  
+
   /**
   * Set value of specific configuration option
   *
@@ -318,11 +319,11 @@
     if (!($config_option instanceof ConfigOption)) {
       return false;
     } // if
-    
+
     $config_option->setValue($value);
     return $config_option->save();
   } // set_config_option
-  
+
   /**
   * This function will return object by the manager class and object ID
   *
@@ -334,18 +335,18 @@
     trace(__FILE__, "get_object_by_manager_and_id($object_id, $manager_class)");
     $object_id = (integer) $object_id;
     $manager_class = trim($manager_class);
-    
+
     if (!is_valid_function_name($manager_class) || !class_exists($manager_class, true)) {
       throw new Error("Class '$manager_class' does not exist");
     } // if
-    
+
     $code = "return $manager_class::findById($object_id);";
-    try { 
+    try {
       $object = eval($code);
     } catch (Exception $e) {
       $object = null;
     }
-    
+
     return $object instanceof DataObject ? $object : null;
   } // get_object_by_manager_and_id
 
@@ -377,15 +378,15 @@
     }
     return join(' ', $ret);
   }
- 
+
   function make_json_for_ajax_return($result,$messageboard = null,$data = array(),$actionjs = null){
   	/*
   	 * result : result function PHP boolean permit to add icon src link icon ok or icon ko to message message board
   	 * messageboard : message to display in the IHM ajax board (option)
   	 * data : data to return to browser
   	 * actionjs : javascript code which can be executed on browser
-  	 * 
-  	 * Return array => [['result'],['messageajaxboard'],['data'],['actionjs']] 
+  	 *
+  	 * Return array => [['result'],['messageajaxboard'],['data'],['actionjs']]
   	 */
   	$myarr = array();
   	$myarr= array(); //init
@@ -397,14 +398,14 @@
   	$myarr['data'] = $data;
   	$myarr['actionjs'] = $actionjs;
 	/*
-	 * The first two headers prevent the browser 
-	 * from caching the response (a problem with IE and GET requests) 
+	 * The first two headers prevent the browser
+	 * from caching the response (a problem with IE and GET requests)
 	 * and the third sets the correct MIME type for JSON.
 	 */
 	header('Cache-Control: no-cache, must-revalidate');
 	header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 	header('Content-Type: text/html; charset: UTF-8');
-  	
-  	return json_encode($myarr);  	
+
+  	return json_encode($myarr);
   }
 ?>
