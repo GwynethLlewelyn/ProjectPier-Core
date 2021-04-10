@@ -21,7 +21,7 @@
     *
     * @var string
     */
-    private $database_type = 'mysql';
+    private $database_type = 'mysqli'; // this is the new database adapter! (gwyneth 20210411)
 
     /**
     * Database host

@@ -339,6 +339,6 @@
       return mysqli_free_result($resource);
     } // freeResult
 
-  } // MysqlDBAdapter
+  } // MysqliDBAdapter
 
 ?>
