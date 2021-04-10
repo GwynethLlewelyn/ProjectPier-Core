@@ -5,11 +5,11 @@ $link = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME) or die('Could not con
 
 $id = $_GET['id'];
 
-//$cs = 'character set '.config_option('character_set', 'utf8');
-//$co = 'collate '.config_option('collation', 'utf8_unicode_ci');
+//$cs = 'character set '.config_option('character_set', 'utf8mb4');
+//$co = 'collate '.config_option('collation', 'utf8mb4_unicode_ci');
 
-$cs = 'character set utf8';
-$co = 'collate utf8_unicode_ci';
+$cs = 'character set utf8mb4';
+$co = 'collate utf8mb4_unicode_ci';
 
 $sql = file_get_contents("$id.sql");
 $sql = str_replace('{$tp}', DB_PREFIX, $sql);

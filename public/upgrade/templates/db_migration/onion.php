@@ -160,7 +160,7 @@ CREATE TABLE `<?php echo $table_prefix ?>config_categories` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `order` (`category_order`)
-) ENGINE=InnoDB <?php echo $default_charset ?> COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB <?php echo $default_charset ?> COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `<?php echo $table_prefix ?>config_categories` (`id`, `name`, `is_system`, `category_order`) VALUES (1, 'system', 1, 0);
 INSERT INTO `<?php echo $table_prefix ?>config_categories` (`id`, `name`, `is_system`, `category_order`) VALUES (2, 'general', 0, 1);

@@ -117,7 +117,7 @@ function pp_wiki_links($project_id, $page_name, $content)
 
 $link = mysqli_connect(DB_HOST,DB_USER,DB_PASS,DB_NAME)
     or die("Couldn't connect to database '" . DB_NAME . "' !");
-mysqli_query($link, "SET NAMES 'utf8'");
+mysqli_query($link, "SET NAMES 'utf8mb4'");
 $project_id = 0;
 $page_id = 0;
 $pages = pp_pages($link);

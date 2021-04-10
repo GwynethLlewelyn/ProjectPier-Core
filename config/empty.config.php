@@ -17,7 +17,7 @@
   define('DB_PASS', ''); 
   define('DB_NAME', ''); 
   define('DB_PERSIST', false); 
-  define('DB_CHARSET', 'utf8'); 
+  define('DB_CHARSET', 'utf8mb4'); 
   define('TABLE_PREFIX', 'pp_'); 
   
 ?>

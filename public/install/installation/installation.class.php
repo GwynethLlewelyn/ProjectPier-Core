@@ -88,7 +88,7 @@
       $database_user    = $this->getDatabaseUsername();
       $database_pass    = $this->getDatabasePassword();
       $database_name    = $this->getDatabaseName();
-      $database_charset = 'utf8';
+      $database_charset = 'utf8mb4';
       $database_prefix  = $this->getTablePrefix();
       $installkey       = sha1(date('l dS \of F Y h:i:s A').$_SERVER['REMOTE_ADDR'].rand(10000,99999));
 
@@ -136,11 +136,11 @@
 
       mysqli_query($this->database_connection, "rollback");
       mysqli_query($this->database_connection, "unlock tables");
-      mysqli_query($this->database_connection, "SET NAMES ? COLLATE ?",  $database_charset, 'utf8_unicode_ci');
+      mysqli_query($this->database_connection, "SET NAMES ? COLLATE ?",  $database_charset, 'utf8mb4_unicode_ci');
       mysqli_query($this->database_connection, "SET SQL_MODE=''");
       mysqli_query($this->database_connection, "SET STORAGE_ENGINE=INNODB");
-      tpl_assign('default_collation', 'COLLATE utf8_unicode_ci');
-      tpl_assign('default_charset', 'CHARACTER SET utf8');
+      tpl_assign('default_collation', 'COLLATE utf8mb4_unicode_ci');
+      tpl_assign('default_charset', 'CHARACTER SET utf8mb4');
 
       mysql_query($this->database_connection, 'BEGIN WORK');
 

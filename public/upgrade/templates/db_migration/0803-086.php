@@ -6,38 +6,38 @@
 
 CREATE TABLE `<?php echo $table_prefix ?>plugins` (
   `plugin_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `installed` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`plugin_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `<?php echo $table_prefix ?>permissions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `source` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `permission` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `source` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `permission` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `<?php echo $table_prefix ?>project_user_permissions` (
   `user_id` int(10) unsigned NOT NULL,
   `project_id` int(10) unsigned NOT NULL,
   `permission_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`user_id`,`project_id`,`permission_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- alter
 
-ALTER TABLE `<?php echo $table_prefix ?>project_file_revisions` ADD `filename` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL default '' AFTER `repository_id`;
+ALTER TABLE `<?php echo $table_prefix ?>project_file_revisions` ADD `filename` VARCHAR( 100 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '' AFTER `repository_id`;
 ALTER TABLE `<?php echo $table_prefix ?>project_tasks` ADD `due_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `text`;
 ALTER TABLE `<?php echo $table_prefix ?>project_task_lists` ADD `priority` INT( 3 ) NOT NULL DEFAULT '0' AFTER `name`;
 ALTER TABLE `<?php echo $table_prefix ?>project_task_lists` ADD `due_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' AFTER `description`;
 ALTER TABLE `<?php echo $table_prefix ?>projects` ADD `priority` INT( 3 ) NOT NULL DEFAULT '0' AFTER `name`;
-ALTER TABLE `<?php echo $table_prefix ?>projects` ADD `logo_file` VARCHAR( 44 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL AFTER `show_description_in_overview`;
+ALTER TABLE `<?php echo $table_prefix ?>projects` ADD `logo_file` VARCHAR( 44 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL AFTER `show_description_in_overview`;
 ALTER TABLE `<?php echo $table_prefix ?>project_users` ADD `role_id` INT( 10 ) NOT NULL DEFAULT '0' AFTER `user_id`;
-ALTER TABLE `<?php echo $table_prefix ?>users` ADD `homepage` VARCHAR( 100 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL default '' AFTER `email`;
+ALTER TABLE `<?php echo $table_prefix ?>users` ADD `homepage` VARCHAR( 100 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL default '' AFTER `email`;
 ALTER TABLE `<?php echo $table_prefix ?>users` ADD `use_LDAP` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `auto_assign`;
 ALTER TABLE `<?php echo $table_prefix ?>users` ADD `use_gravatar` TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT '0' AFTER `avatar_file`;
-ALTER TABLE `<?php echo $table_prefix ?>project_file_revisions` CHANGE `type_string` `type_string` VARCHAR( 140 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL;
+ALTER TABLE `<?php echo $table_prefix ?>project_file_revisions` CHANGE `type_string` `type_string` VARCHAR( 140 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
 ALTER TABLE `<?php echo $table_prefix ?>users` DROP INDEX `email` , ADD INDEX `email` ( `email` ) 
 
 -- convert
@@ -118,8 +118,8 @@ INSERT INTO `<?php echo $table_prefix ?>config_options` (`category_name`, `name`
 
 INSERT INTO `<?php echo $table_prefix ?>config_options` (`category_name`, `name`, `value`, `config_handler_class`, `is_system`, `option_order`, `dev_comment`) VALUES ('general', 'installation_root', '/', 'StringConfigHandler', 0, 0, NULL);
 INSERT INTO `<?php echo $table_prefix ?>config_options` (`category_name`, `name`, `value`, `config_handler_class`, `is_system`, `option_order`, `dev_comment`) VALUES ('general', 'check_email_unique', '0', 'BoolConfigHandler', 0, 0, 'True if emails should be unique when adding/editing a user');
-INSERT INTO `<?php echo $table_prefix ?>config_options` (`category_name`, `name`, `value`, `config_handler_class`, `is_system`, `option_order`, `dev_comment`) VALUES ('database', 'character_set', 'utf8', 'StringConfigHandler', 0, 0, 'Standard SQL character set (e.g. utf8, latin1)');
-INSERT INTO `<?php echo $table_prefix ?>config_options` (`category_name`, `name`, `value`, `config_handler_class`, `is_system`, `option_order`, `dev_comment`) VALUES ('database', 'collation', 'utf8_unicode_ci', 'StringConfigHandler', 0, 0, 'Standard SQL collate value (e.g. latin1_bin, utf8_bin, utf8_unicode_ci)');
+INSERT INTO `<?php echo $table_prefix ?>config_options` (`category_name`, `name`, `value`, `config_handler_class`, `is_system`, `option_order`, `dev_comment`) VALUES ('database', 'character_set', 'utf8mb4', 'StringConfigHandler', 0, 0, 'Standard SQL character set (e.g. utf8mb4, latin1)');
+INSERT INTO `<?php echo $table_prefix ?>config_options` (`category_name`, `name`, `value`, `config_handler_class`, `is_system`, `option_order`, `dev_comment`) VALUES ('database', 'collation', 'utf8mb4_unicode_ci', 'StringConfigHandler', 0, 0, 'Standard SQL collate value (e.g. latin1_bin, utf8mb4_bin, utf8mb4_unicode_ci)');
 INSERT INTO `<?php echo $table_prefix ?>config_options` (`category_name`, `name`, `value`, `config_handler_class`, `is_system`, `option_order`, `dev_comment`) VALUES ('general', 'session_lifetime', '3600', 'IntegerConfigHandler', 0, 24, '');
 INSERT INTO `<?php echo $table_prefix ?>config_options` (`category_name`, `name`, `value`, `config_handler_class`, `is_system`, `option_order`, `dev_comment`) VALUES ('general', 'remember_login_lifetime', '1209600', 'IntegerConfigHandler', 0, 24, '');
 INSERT INTO `<?php echo $table_prefix ?>config_options` (`category_name`, `name`, `value`, `config_handler_class`, `is_system`, `option_order`, `dev_comment`) VALUES ('general', 'default_controller', 'dashboard', 'StringConfigHandler', 0, 25, '');

@@ -59,7 +59,7 @@
           'database_pass'    => $this->getFromStorage('database_pass'),
           'database_name'    => $this->getFromStorage('database_name', 'pp'),
           'database_create'  => $this->getFromStorage('database_create' ),
-          'database_charset' => $this->getFromStorage('database_charset', 'utf8'),
+          'database_charset' => $this->getFromStorage('database_charset', 'utf8mb4'),
           'database_prefix'  => $this->getFromStorage('database_prefix', 'pp088_'),
         ); // array
       } // if

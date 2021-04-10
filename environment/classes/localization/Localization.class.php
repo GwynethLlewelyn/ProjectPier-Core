@@ -1,7 +1,7 @@
 <?php
 include_once 'persian.php';
 
-function utf8_strrev($str, $reverse_numbers = true){
+function utf8mb4_strrev($str, $reverse_numbers = true){
     $pattern = $reverse_numbers ? '/./us' : '/(\d+)?./us';
     preg_match_all($pattern, $str, $ar);
     return join('',array_reverse($ar[0]));
@@ -259,8 +259,8 @@ function utf8_strrev($str, $reverse_numbers = true){
         if ($s=='rd') $n = 3;
         $date_lang = str_replace( $s, lang('ordinal ' . $n), $date_lang ); 
       }
-      //return $date_lang . ' reversed Persian=' . utf8_strrev(FormatPersianSmallDate ( $pdate )) . ' Persian=' . FormatPersianSmallDate ( $pdate );
-      //return utf8_strrev(FormatPersianDate ( $pdate ));
+      //return $date_lang . ' reversed Persian=' . utf8mb4_strrev(FormatPersianSmallDate ( $pdate )) . ' Persian=' . FormatPersianSmallDate ( $pdate );
+      //return utf8mb4_strrev(FormatPersianDate ( $pdate ));
       return $date_lang;
     } // date_lang
 

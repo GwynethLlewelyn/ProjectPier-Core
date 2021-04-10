@@ -140,10 +140,10 @@
       
       $mysql_version = mysql_get_server_info($this->database_connection);
       if ($mysql_version && version_compare($mysql_version, '4.1', '>=')) {
-        $constants['DB_CHARSET'] = 'utf8';
-        @mysql_query("SET NAMES 'utf8'", $this->database_connection);
-        tpl_assign('default_collation', $default_collation = 'collate utf8_unicode_ci');
-        tpl_assign('default_charset', $default_charset = 'DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci');
+        $constants['DB_CHARSET'] = 'utf8mb4';
+        @mysql_query("SET NAMES 'utf8mb4'", $this->database_connection);
+        tpl_assign('default_collation', $default_collation = 'collate utf8mb4_unicode_ci');
+        tpl_assign('default_charset', $default_charset = 'DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
       } else {
         tpl_assign('default_collation', $default_collation = '');
         tpl_assign('default_charset', $default_charset = '');

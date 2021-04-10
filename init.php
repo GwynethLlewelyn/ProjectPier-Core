@@ -99,7 +99,7 @@
       'persist' => DB_PERSIST
     )); // connect
     if (defined('DB_CHARSET') && trim(DB_CHARSET)) {
-      DB::attempt("SET NAMES ? COLLATE ?", DB_CHARSET, 'utf8_unicode_ci');
+      DB::attempt("SET NAMES ? COLLATE ?", DB_CHARSET, 'utf8mb4_unicode_ci');
     } // if
     DB::attempt('ROLLBACK');
     DB::attempt('UNLOCK TABLES');

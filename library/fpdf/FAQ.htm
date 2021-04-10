@@ -153,9 +153,9 @@ You have to create an object from the PDF class, not FPDF:
 <li id='q7'>
 <p><b>7.</b> <span class='question'>Accented characters are replaced by some strange characters like é.</span></p>
 Don't use UTF-8 encoding. Standard FPDF fonts use ISO-8859-1 or Windows-1252.
-It is possible to perform a conversion to ISO-8859-1 with utf8_decode():
+It is possible to perform a conversion to ISO-8859-1 with utf8mb4_decode():
 <div class="doc-source">
-<pre><code>$str = utf8_decode($str);</code></pre>
+<pre><code>$str = utf8mb4_decode($str);</code></pre>
 </div>
 But some characters such as Euro won't be translated correctly. If the iconv extension is available, the
 right way to do it is the following:
