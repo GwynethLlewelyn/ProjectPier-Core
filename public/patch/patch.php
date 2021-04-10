@@ -2,7 +2,6 @@
 error_reporting(E_ALL);
 require('../../config/config.php');
 $link = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME) or die('Could not connect to database server ' . DB_HOST);
-// mysql_select_db(DB_NAME, $link) or die('Could not select database ' . DB_NAME);
 
 $id = $_GET['id'];
 

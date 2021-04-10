@@ -75,7 +75,7 @@
         $database_charset = (string) array_var($config_form_data, 'database_charset');
         $database_prefix  = (string) array_var($config_form_data, 'database_prefix');
 
-        if ($this->database_connection = @mysql_connect($database_host, $database_user, $database_pass)) {
+        if ($this->database_connection = mysqli_connect($database_host, $database_user, $database_pass, $database_name)) {
           // ---------------------------------------------------
           //  Check if we have at least 4.1
           // ---------------------------------------------------

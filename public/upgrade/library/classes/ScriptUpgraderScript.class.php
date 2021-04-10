@@ -1,7 +1,7 @@
 <?php
 
   /**
-  * Abstract upgrade script. Single script is used to upgrade product from $version_from 
+  * Abstract upgrade script. Single script is used to upgrade product from $version_from
   * to $verion_to or to execute some code changes regardles of the version
   *
   * @package ScriptUpgrader
@@ -9,35 +9,35 @@
   * @http://www.projectpier.org/
   */
   abstract class ScriptUpgraderScript {
-    
+
     /**
     * Output object
     *
     * @var Output
     */
     private $output;
-    
+
     /**
     * Upgrader object that constructed this upgrade script
     *
     * @var ScriptUpgrader
     */
     private $upgrader;
-  
+
     /**
     * Upgrade from version
     *
     * @var string
     */
     private $version_from;
-    
+
     /**
     * Upgrader to version
     *
     * @var string
     */
     private $version_to;
-    
+
     /**
     * Construct upgrade script
     *
@@ -47,7 +47,7 @@
     function __construct(Output $output) {
       $this->setOutput($output);
     } // __construct
-    
+
     /**
     * Execute this script
     *
@@ -55,7 +55,7 @@
     * @return boolean
     */
     abstract function execute();
-    
+
     /**
     * Return script name. This can be overriden by the single step
     *
@@ -65,17 +65,17 @@
     function getScriptName() {
       return 'Upgrade ' . $this->getVersionFrom() . ' -> ' . $this->getVersionTo();
     } // getName
-    
+
     // ---------------------------------------------------
     //  Utils
     // ---------------------------------------------------
-    
+
     /**
     * Execute multiple queries
-    * 
+    *
     * This one is really quick and dirty because I want to finish this and catch
     * the bus. Need to be redone ASAP
-    * 
+    *
     * This function returns true if all queries are executed successfully
     *
     * @todo Make a better implementation
@@ -91,35 +91,35 @@
         $executed_queries = 0;
         return true;
       } // if
-      
+
       // Make it work on PHP 5.0.4
       $sql = str_replace(array("\r\n", "\r"), array("\n", "\n"), $sql);
-      
+
       $queries = explode(";\n", $sql);
       if (!is_array($queries) || !count($queries)) {
         $total_queries = 0;
         $executed_queries = 0;
         return true;
       } // if
-      
+
       $total_queries = count($queries);
       foreach ($queries as $query) {
         if (trim($query)) {
-          if (@mysql_query(trim($query), $connection)) {
+          if (mysqli_query($connection, trim($query))) {
             $executed_queries++;
           } else {
             return false;
           } // if
         } // if
       } // if
-      
+
       return true;
     } // executeMultipleQueries
-    
+
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
-    
+
     /**
     * Get upgrader
     *
@@ -129,7 +129,7 @@
     function getUpgrader() {
       return $this->upgrader;
     } // getUpgrader
-    
+
     /**
     * Set upgrader value
     *
@@ -139,7 +139,7 @@
     function setUpgrader(ScriptUpgrader $value) {
       $this->upgrader = $value;
     } // setUpgrader
-    
+
     /**
     * Get version_from
     *
@@ -149,7 +149,7 @@
     function getVersionFrom() {
       return $this->version_from;
     } // getVersionFrom
-    
+
     /**
     * Set version_from value
     *
@@ -159,7 +159,7 @@
     protected function setVersionFrom($value) {
       $this->version_from = $value;
     } // setVersionFrom
-    
+
     /**
     * Get version_to
     *
@@ -169,7 +169,7 @@
     function getVersionTo() {
       return $this->version_to;
     } // getVersionTo
-    
+
     /**
     * Set version_to value
     *
@@ -179,7 +179,7 @@
     protected function setVersionTo($value) {
       $this->version_to = $value;
     } // setVersionTo
-    
+
     /**
     * Return output instance
     *
@@ -189,7 +189,7 @@
     function getOutput() {
       return $this->output;
     } // getOutput
-    
+
     /**
     * Set output object
     *
@@ -200,7 +200,7 @@
       $this->output = $output;
       return $output;
     } // setOutput
-    
+
     /**
     * Print message to the output
     *
@@ -213,7 +213,7 @@
         $this->output->printMessage($message, $is_error);
       } // if
     } // printMessage
-    
+
   } // ScriptUpgraderScript
 
 ?>
