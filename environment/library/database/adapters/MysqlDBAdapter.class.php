@@ -5,9 +5,11 @@
   *
   * @version 1.0
   * @http://www.projectpier.org/
+  *
+  * Deprecated since PHP 7.0; do not use! (gwyneth 20210410)
   */
   class MysqlDBAdapter extends AbstractDBAdapter {
-  
+
     /**
     * Connect to the database based on the params array
     *
@@ -17,32 +19,32 @@
     * @throws DBConnectError
     */
     protected function connect($params) {
-      
+
       $host     = array_var($params, 'host', '');
       $user     = array_var($params, 'user', '');
       $pass     = array_var($params, 'pass', '');
       $database = array_var($params, 'name', '');
       $persist  = array_var($params, 'persist', false);
-      
-      $link = $persist ? 
+
+      $link = $persist ?
         @mysql_pconnect($host, $user, $pass) :
         @mysql_connect($host, $user, $pass);
-        
+
       if (!is_resource($link)) {
         throw new DBConnectError($host, $user, $pass, $database);
       } // if
-      
+
       if (!@mysql_select_db($database, $link)) {
         throw new DBConnectError($host, $user, $pass, $database);
       } // if
-      
+
       $this->setLink($link);
       $this->setParams($params);
       $this->setDatabaseName($database);
       return true;
-      
+
     } // connect
-    
+
     /**
     * Basic query execution
     *
@@ -53,7 +55,7 @@
     protected function executeQuery($sql) {
       return @mysql_query($sql, $this->link);
     } // executeQuery
-    
+
     /**
     * Get begin work SQL (start transaction)
     *
@@ -64,7 +66,7 @@
     function getBeginWorkCommand() {
       return 'BEGIN WORK';
     } // getBeginWorkCommand
-    
+
     /**
     * Get comming SQL
     *
@@ -75,7 +77,7 @@
     function getCommitCommand() {
       return 'COMMIT';
     } // getCommitCommand
-    
+
     /**
     * Get rollback SQL
     *
@@ -86,7 +88,7 @@
     function getRollbackCommand() {
       return 'ROLLBACK';
     } // getRollbackCommand
-    
+
     /**
     * Return number of affected rows
     *
@@ -97,7 +99,7 @@
     function affectedRows() {
       return mysql_affected_rows($this->link);
     } // affectedRows
-    
+
     /**
     * Return last insert ID
     *
@@ -108,7 +110,7 @@
     function lastInsertId() {
       return mysql_insert_id($this->link);
     } // lastInsertId
-    
+
     /**
     * Returns last error message that server thrown
     *
@@ -119,7 +121,7 @@
     function lastError() {
       return mysql_error($this->link);
     } // lastError
-    
+
     /**
     * Returns code of the last error
     *
@@ -130,9 +132,9 @@
     function lastErrorCode() {
       return mysql_errno($this->link);
     } // lastErrorCode
-    
+
     /**
-    * Return array of tables that exists in database. This function will return NULL if there are 
+    * Return array of tables that exists in database. This function will return NULL if there are
     * no tables in database
     *
     * @access public
@@ -149,7 +151,7 @@
       } // if
       return count($table_names) ? $table_names : null;
     } // listTables
-    
+
     /**
     * Drop one or more tables. If $table_names is string only that table will be droped, else script will drop
     *
@@ -158,24 +160,24 @@
     * @return boolean
     */
     function dropTables($table_names) {
-      
+
       if (empty($table_names)) {
         return true;
       } // if
       if (!is_array($table_names)) {
         $table_names = array($table_names);
       } // if
-      
+
       $escaped_table_names = array();
       foreach ($table_names as $table_name) {
         $escaped_table_names[] = $this->escapeField($table_name);
       }
-      return count($escaped_table_names) ? 
+      return count($escaped_table_names) ?
         $this->execute('DROP TABLE ' .  implode(', ', $escaped_table_names)) :
         true;
-        
+
     } // dropTables
-    
+
     /**
     * Remove all data from specific tables
     *
@@ -184,22 +186,22 @@
     * @return boolean
     */
     function emptyTables($table_names) {
-      
+
       if (empty($table_names)) {
         return true;
       } // if
       if (!is_array($table_names)) {
         $table_names = array($table_names);
       } // if
-      
+
       foreach ($table_names as $table_name) {
         $this->execute('TRUNCATE ' . $this->escapeField($table_name));
       } // foreach
-      
+
       return true;
-      
+
     } // emptyTables
-    
+
     /**
     * This function will return array of table names and their CREATE TABLE commands
     *
@@ -221,7 +223,7 @@
       } // foreach
       return count($create_commands) ? $create_commands : null;
     } // exportDatabaseStructure
-    
+
     /**
     * This function is able to import database construction from any connected adapter
     *
@@ -241,7 +243,7 @@
         } // foreach
       } // if
     } // importDatabaseStructure
-    
+
     /**
     * Return CREATE TABLE sql for specific table
     *
@@ -253,7 +255,7 @@
       $result = $this->executeOne('SHOW CREATE TABLE ' . $this->escapeField($table_name));
       return array_var($result, 'Create Table');
     } // exportTableStructure
-    
+
     /**
     * Escape name of table field or name of the table
     *
@@ -264,7 +266,7 @@
     function escapeField($field) {
       return '`' . str_replace('`', '``', trim($field)) . '`';
     } // escapeField
-    
+
     /**
     * Escape value before use it in query. This function makes difference between NULL, scalar
     * and DateTime values
@@ -277,11 +279,11 @@
       if (is_null($unescaped)) {
         return 'NULL';
       } // if
-      
+
       if (is_bool($unescaped)) {
         return $unescaped ? "'1'" : "'0'";
       } // if
-      
+
       if (is_array($unescaped)) {
         $escaped_array = array();
         foreach ($unescaped as $unescaped_value) {
@@ -289,14 +291,14 @@
         }
         return implode(', ', $escaped_array);
       } // if
-      
+
       if (is_object($unescaped) && ($unescaped instanceof DateTimeValue)) {
 		return "TIMESTAMP '" . mysql_real_escape_string($unescaped->toMySQL()) . "'";
       } // if
-      
+
       return "'" . mysql_real_escape_string($unescaped, $this->link) . "'";
     } // escapeValue
-    
+
     /**
     * Fetch row from query result
     *
@@ -307,7 +309,7 @@
     function fetchRow($resource) {
       return mysql_fetch_assoc($resource);
     } // fetchRow
-    
+
     /**
     * Return number of rows in specific query result
     *
@@ -318,7 +320,7 @@
     function numRows($resource) {
       return mysql_num_rows($resource);
     } // numRows
-    
+
     /**
     * Free database result
     *
@@ -329,7 +331,7 @@
     function freeResult($resource) {
       return mysql_free_result($resource);
     } // freeResult
-    
+
   } // MysqlDBAdapter
 
 ?>
