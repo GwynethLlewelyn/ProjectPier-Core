@@ -11,7 +11,7 @@
   function instance_of($object, $class) {
     return $object instanceof $class;
   } // instance_of
-  
+
   /**
   * Show var dump. pre_var_dump() is used for testing only!
   *
@@ -24,7 +24,7 @@
     var_dump($var);
     print '</pre>';
   } // pre_var_dump
-  
+
   /**
   * This function will return clean variable info
   *
@@ -60,10 +60,10 @@
       return "(string) '" . clean($var) . "'";
     } // if
   } // clean_var_info
-  
+
   /**
   * Equivalent to htmlspecialchars(), but allows &#[0-9]+ (for unicode)
-  * 
+  *
   * This function was taken from punBB codebase <http://www.punbb.org/>
   *
   * @param string $str
@@ -74,7 +74,7 @@
   	$str = str_replace(array('<', '>', '"'), array('&lt;', '&gt;', '&quot;'), $str);
   	return $str;
   } // clean
-  
+
   /**
   * Convert entities back to valid characters
   *
@@ -86,7 +86,7 @@
     $replace = array('&', '<', '>');
     return str_replace($search, $replace, $escaped_string);
   } // undo_htmlspecialchars
-  
+
   /**
   * This function will return true if $str is valid function name (made out of alpha numeric characters + underscore)
   *
@@ -98,13 +98,13 @@
     if ($check_str == '') {
       return false; // empty string
     }
-    
+
     $first_char = substr_utf($check_str, 0, 1);
     if (is_numeric($first_char)) return false; // first char can't be number
-    
+
     return (boolean) preg_match("/^([a-zA-Z0-9_]*)$/", $check_str);
   } // is_valid_function_name
-  
+
   /**
   * Check if specific string is valid sha1() hash
   *
@@ -114,9 +114,9 @@
   function is_valid_hash($hash) {
     return ((strlen($hash) == 32) || (strlen($hash) == 40)) && (boolean) preg_match("/^([a-f0-9]*)$/", $hash);
   } // is_valid_hash
-  
+
   /**
-  * Return variable from hash (associative array). If value does not exists 
+  * Return variable from hash (associative array). If value does not exists
   * return default value
   *
   * @access public
@@ -131,7 +131,7 @@
     }
     return $default;
   } // array_var
-  
+
   /**
   * This function will return $str as an array
   *
@@ -142,17 +142,17 @@
     if (!is_string($str) || (strlen($str) == 0)) {
       return array();
     }
-    
+
     $result = array();
     for ($i = 0, $strlen = strlen($str); $i < $strlen; $i++) {
       $result[] = $str[$i];
     } // if
-    
+
     return $result;
   } // string_to_array
-  
+
   /**
-  * This function will return ID from array variables. Default settings will get 'id' 
+  * This function will return ID from array variables. Default settings will get 'id'
   * variable from $_GET. If ID is not found function will return NULL
   *
   * @param string $var_name Variable name. Default is 'id'
@@ -163,20 +163,20 @@
   function get_id($var_name = 'id', $from = null, $default = null) {
     $var_name = trim($var_name);
     if ($var_name == '') return $default; // empty varname?
-    
+
     if (is_null($from)) {
       $from = $_GET;
     }
-    
+
     if (!is_array($from)) return $default; // $from is array?
     if (!is_valid_function_name($var_name)) return $default; // $var_name is valid?
-    
+
     $value = array_var($from, $var_name, $default);
     return is_numeric($value) ? (integer) $value : $default;
   } // get_id
-  
+
   /**
-  * Flattens the array. This function does not preserve keys, it just returns 
+  * Flattens the array. This function does not preserve keys, it just returns
   * array indexed form 0 .. count - 1
   *
   * @access public
@@ -188,13 +188,13 @@
     if (!is_array($array)) {
       return array($array);
     }
-    
+
     // Prepare result
     $result = array();
-    
+
     // Loop elements
     foreach ($array as $value) {
-      
+
       // Subelement is array? Flat it
       if (is_array($value)) {
         $value = array_flat($value);
@@ -205,11 +205,11 @@
         $result[] = $value;
       } // if
     } // if
-    
+
     // Return result
     return $result;
   } // array_flat
-  
+
   /**
   * Replace first $search_for with $replace_with in $in. If $search_for is not found
   * original $in string will be returned...
@@ -228,7 +228,7 @@
       return substr($in, 0, $pos) . $replace_with . substr($in, $pos + strlen($search_for), strlen($in));
     } // if
   } // str_replace_first
-  
+
   /**
   * String starts with something
   *
@@ -239,10 +239,12 @@
   * @param string $niddle Needle string
   * @return boolean
   */
-  function str_starts_with($string, $niddle) {
-  	return substr($string, 0, strlen($niddle)) == $niddle;  	
-  } // end func str_starts with
-  
+  if (!function_exists("str_starts_with")) {  // PHP 8.0+ includes this by default (gwyneth 20210410)
+    function str_starts_with($string, $niddle) {
+    	return substr($string, 0, strlen($niddle)) == $niddle;
+    } // end func str_starts_with
+  }
+
   /**
   * String ends with something
   *
@@ -253,10 +255,12 @@
   * @param string $niddle Needle string
   * @return boolean
   */
-  function str_ends_with($string, $niddle) {
-    return substr($string, strlen($string) - strlen($niddle), strlen($niddle)) == $niddle;
-  } // end func str_ends_with
-  
+  if (!function_exists("str_ends_with")) {  // PHP 8.0+ includes this by default (gwyneth 20210410)
+    function str_ends_with($string, $niddle) {
+      return substr($string, strlen($string) - strlen($niddle), strlen($niddle)) == $niddle;
+    } // end func str_ends_with
+  }
+
   /**
   * Return path with trailing slash
   *
@@ -266,7 +270,7 @@
   function with_slash($path) {
     return str_ends_with($path, '/') ? $path : $path . '/';
   } // end func with_slash
-  
+
   /**
   * Remove trailing slash from the end of the path (if exists)
   *
@@ -276,7 +280,7 @@
   function without_slash($path) {
     return str_ends_with($path, '/') ? substr($path, 0, strlen($path) - 1) : $path;
   } // without_slash
-  
+
   /**
   * Check if selected email has valid email format
   *
@@ -291,7 +295,7 @@
     	return false;
     } // if
   } // end func is_valid_email
-  
+
   /**
   * Verify the syntax of the given URL.
   *
@@ -301,8 +305,8 @@
   */
   function is_valid_url($url) {
     return preg_match(URL_FORMAT, $url);
-  } // end func is_valid_url 
-  
+  } // end func is_valid_url
+
 
   function ignore_error($errno, $errstr, $errfile, $errline) {
     return true;
@@ -340,7 +344,7 @@
       die();
     }
   } // end redirect_to
-  
+
   /**
   * Redirect to referer
   *
@@ -356,7 +360,7 @@
       redirect_to($referer);
     } // if
   } // redirect_to_referer
-  
+
   /**
   * Return referer URL
   *
@@ -366,7 +370,7 @@
   function get_referer($default = null) {
     return array_var($_SERVER, 'HTTP_REFERER', $default);
   } // get_referer
-  
+
   /**
   * This function will return max upload size in bytes
   *
@@ -375,14 +379,14 @@
   */
   function get_max_upload_size() {
     return min(
-      php_config_value_to_bytes(ini_get('upload_max_filesize')), 
+      php_config_value_to_bytes(ini_get('upload_max_filesize')),
       php_config_value_to_bytes(ini_get('post_max_size'))
     ); // max
   } // get_max_upload_size
-  
+
   /**
   * Convert PHP config value (2M, 8M, 200K...) to bytes
-  * 
+  *
   * This function was taken from PHP documentation
   *
   * @param string $val
@@ -400,16 +404,16 @@
       case 'k':
         $val *= 1024;
     } // if
-    
+
     return $val;
   } // php_config_value_to_bytes
-  
+
   // ==========================================================
   //  POST and GET
   // ==========================================================
-  
+
   /**
-  * This function will strip slashes if magic quotes is enabled so 
+  * This function will strip slashes if magic quotes is enabled so
   * all input data ($_GET, $_POST, $_COOKIE) is free of slashes
   *
   * @access public
@@ -423,7 +427,7 @@
       array_stripslashes($_COOKIE);
     } // if
   } // fix_input_quotes
-  
+
   /**
   * This function will walk recursivly thorugh array and strip slashes from scalar values
   *
@@ -476,8 +480,8 @@
       return mb_convert_case($string, MB_CASE_LOWER, "UTF-8");
     }
     $uc = "ĄÇČĆĘŁŃÑÓŚŹŻABCDÐEFTGĞHIMJKLNOŒÖPRSŠŞUÜWYÝZŽQXVЁЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮÆÅÂÀÁÄÃÊÈÉËÎÍÌÏÔÕÒÓÖØÛÙÚÜİ";
-    $lc = "ąçčćęłńñóśźżabcdðeftgğhimjklnoœöprsšşuüwyýzžqxvёйцукенгшщзхъфывапролджэячсмитьбюæåâàáäãêèéëîíìïôõòóöøûùúüi"; 
-    return strtr($string, $uc, $lc);  
+    $lc = "ąçčćęłńñóśźżabcdðeftgğhimjklnoœöprsšşuüwyýzžqxvёйцукенгшщзхъфывапролджэячсмитьбюæåâàáäãêèéëîíìïôõòóöøûùúüi";
+    return strtr($string, $uc, $lc);
   }
 
   /**
@@ -497,7 +501,7 @@
         'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o', 'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ý'=>'y', 'ý'=>'y', 'þ'=>'b',
         'ÿ'=>'y', 'Ŕ'=>'R', 'ŕ'=>'r',
     );
-    
+
     return strtr($string, $table);
   }
 
@@ -512,16 +516,16 @@
     if (isset($_SERVER['HTTPS'])) {
       if ($_SERVER['HTTPS']!='off') { // IIS
         if ($_SERVER['HTTPS']!='') {
-          $protocol = 'https://'; 
+          $protocol = 'https://';
         }
       }
     }
-    return $protocol . $_SERVER['HTTP_HOST'] . $relative_url; 
+    return $protocol . $_SERVER['HTTP_HOST'] . $relative_url;
   }
 
   /**
   * This function returns true if string begins with certain string
-  * 
+  *
   * @param string $string
   * @param string $search
   * @return boolean
@@ -532,7 +536,7 @@
 
   /**
   * This function will return chunked content unchunked
-  * 
+  *
   * @param string $data
   * @return $unchunked_data
   * source: php.net
@@ -554,7 +558,7 @@
   /**
   * This function will return content from url
   * Note: Handles chunked content
-  * 
+  *
   * @param string $host
   * @param string $port
   * @param string $url (within host)
