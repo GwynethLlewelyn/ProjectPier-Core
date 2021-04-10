@@ -15,7 +15,7 @@
       $prepared_attributes = array();
       foreach ($attributes as $k => $v) {
         if (trim($k) <> '') {
-          
+
           if (is_bool($v)) {
             if ($v) {
               $prepared_attributes[] = "$k=\"$k\"";
@@ -23,16 +23,16 @@
           } else {
             $prepared_attributes[] = $k . '="' . clean($v) . '"';
           } // if
-          
+
         } // if
       } // foreach
       $attribute_string = implode(' ', $prepared_attributes);
     } // if
-    
+
     $empty_string = $empty ? ' /' : ''; // Close?
     return "<$name $attribute_string$empty_string>"; // And done...
   } // html_tag
-  
+
   /**
   * Close specific HTML tag
   *
@@ -43,7 +43,7 @@
   function close_html_tag($name) {
     return "</$name>";
   } // close_html_tag
-  
+
   /**
   * Return title tag
   *
@@ -66,23 +66,23 @@
   * @return string
   */
   function link_tag($href, $rel_or_rev = 'rel', $rel = 'alternate', $attributes = null) {
-    
+
     // Prepare attributes
     $all_attributes = array(
       'href' => $href,
       $rel_or_rev => $rel
     ); // array
-    
+
     // Additional attributes
     if (is_array($attributes) && count($attributes)) {
       $all_attributes = array_merge($all_attributes, $attributes);
     } // if
-  	  
+
     // And done!
     return open_html_tag('link', $all_attributes, true);
-  	  
+
   } // link_tag
-  
+
   /**
   * Rel link tag
   *
@@ -95,7 +95,7 @@
   function link_tag_rel($href, $rel, $attributes = null) {
     return link_tag($href, 'rel', $rel, $attributes);
   } // link_tag_rel
-  
+
   /**
   * Rev link tag
   *
@@ -108,7 +108,7 @@
   function link_tag_rev($href, $rel, $attributes = null) {
     return link_tag($href, 'rev', $rel, $attributes);
   } // link_tag_rev
-  
+
   /**
   * Return code of meta tag
   *
@@ -119,21 +119,21 @@
   * @return string
   */
   function meta_tag($name, $content, $http_equiv = false) {
-    
+
     // Name attribute
     $name_attribute = $http_equiv ? 'http-equiv' : 'name';
-    
+
     // Prepare attributes
     $attributes = array(
       $name_attribute => $name,
       'content' => $content
     ); // array
-    
+
     // And done...
     return open_html_tag('meta', $attributes, true);
-    
+
   } // meta_tag
-  
+
   /**
   * Generate javascript tag
   *
@@ -143,23 +143,23 @@
   * @return string
   */
   function javascript_tag($src = null, $content = null) {
-    
+
     // Content formatting
     if ($content) {
       $content = "\n" . $content . "\n";
     }
-    
+
     // Prepare attributes
     $attributes = array('type' => 'text/javascript');
     if (!is_null($src)) {
       $attributes['src'] = is_valid_url($src) ? $src : get_javascript_url($src);
     } // if
-    
+
     // Generate
     return open_html_tag('script', $attributes) . $content . close_html_tag('script');
-    
+
   } // javascript_tag
-  
+
   /**
   * Render stylesheet tag
   *
@@ -172,18 +172,18 @@
     if (!is_valid_url($href)) {
       $href = get_stylesheet_url($href);
     } // if
-    
+
     $all_attributes = array(
       'type' => 'text/css'
     ); // array
-    
+
     if (is_array($attributes) && count($attributes)) {
       array_merge($all_attributes, $attributes);
     } // if
-    
+
     return link_tag($href, 'rel', 'Stylesheet', $all_attributes);
   } // stylesheet_tag
-  
+
   /**
   * Render style tag inside optional conditional comment
   *
@@ -194,7 +194,7 @@
   * @return string
   */
   function style_tag($content, $condition = null) {
-    
+
     // Open and close for conditional comment
     $open = '';
     $close = '';
@@ -202,12 +202,12 @@
       $open = "<!--[if $condition]>\n";
       $close = '<![endif]-->';
     } // if
-    
+
     // And return...
-    return $open . open_html_tag('style', array('type' => 'text/css')) . 
-      "\n" . $content . "\n" . 
+    return $open . open_html_tag('style', array('type' => 'text/css')) .
+      "\n" . $content . "\n" .
       close_html_tag('style') . "\n" . $close;
-    
+
   } // style_tag
 
   /**
@@ -224,7 +224,7 @@
 
   /**
   * Page description class
-  * 
+  *
   * Class that hold XHTML page properties. This class can be used from templates
   * to inform layouts that templates want some proprety changes. It is entirely
   * on layout to decide if it will use properties from instance of this class or
@@ -234,49 +234,49 @@
   * @http://www.projectpier.org/
   */
   class PageDescription {
-    
+
     /**
     * Page title
     *
     * @var string
     */
     private $title;
-    
+
     /**
     * Array of page metadata
     *
     * @var array
     */
     private $meta = array();
-    
+
     /**
     * Array of links
     *
     * @var array
     */
     private $links = array();
-    
+
     /**
     * Array of inline CSS rules
     *
     * @var array
     */
     private $inline_css = array();
-    
+
     /**
     * Array of links to external JS files
     *
     * @var array
     */
     private $javascript = array();
-    
+
     /**
     * Array of inline JS code
     *
     * @var array
     */
     private $inline_js = array();
-    
+
     /**
     * Get title
     *
@@ -287,7 +287,7 @@
     function getTitle() {
       return $this->title;
     } // getTitle
-    
+
     /**
     * Set title value
     *
@@ -298,7 +298,7 @@
     function setTitle($value) {
       $this->title = $value;
     } // setTitle
-    
+
     /**
     * Get meta
     *
@@ -309,7 +309,7 @@
     function getMeta() {
       return $this->meta;
     } // getMeta
-    
+
     /**
     * Add page meta entry
     *
@@ -326,7 +326,7 @@
         'http_equiv' => $http_equiv
       ); // array
     } // addMeta
-    
+
     /**
     * Get links
     *
@@ -337,7 +337,7 @@
     function getLinks() {
       return $this->links;
     } // getLinks
-    
+
     /**
     * Add rel link
     *
@@ -346,10 +346,10 @@
     * @param string $attributes
     * @return mixed
     */
-    function addRelLink($href, $rel = 'alternate', $attributes) {
+    function addRelLink($href, $rel = 'alternate', $attributes = null) {
       $this->addLink($href, 'rel', $rel, $attributes);
     } // end func addRelMedia
-  	
+
     /**
     * Add rev link
     *
@@ -361,7 +361,7 @@
     function addRevLink($href, $rev = 'alternate', $attributes = null) {
       $this->addLink($href, 'rev', $rev, $attributes);
     } // end func addRevLink
-  	
+
     /**
     * Add link
     *
@@ -373,28 +373,28 @@
     * @return null
     */
     function addLink($href, $rel_or_rev = 'rel', $rel = 'alternate', $attributes = null) {
-    
+
       // Do we have this link?
       foreach ($this->links as $link) {
         if (array_var($link, 'href') == $href) {
           return;
         }
       }
-  	  
+
       // Prepare link attributes...
       $link = array(
         'href'      => $href,
         $rel_or_rev => $rel
       ); // array
-  	  
+
       // Additional attributes
       if (is_array($attributes) && count($attributes)) {
         $link = array_merge($link, $attributes);
       }
       $this->links[] = $link;
-    
+
     } // addLink
-    
+
     /**
     * Get inline_css
     *
@@ -405,7 +405,7 @@
     function getInlineCSS() {
       return $this->inline_css;
     } // getInlineCSS
-    
+
     /**
     * Add inline CSS block
     *
@@ -420,7 +420,7 @@
         'condition' => $condition
       ); // array
     } // addInlineCSS
-    
+
     /**
     * Get javascription
     *
@@ -431,7 +431,7 @@
     function getJavascript() {
       return $this->javascript;
     } // getJavascript
-    
+
     /**
     * Add external JS link
     *
@@ -442,7 +442,7 @@
     function addJavascript($src) {
       $this->javascript[] = $src;
     } // addJavascript
-    
+
     /**
     * Check if specific javascript file is included on page
     *
@@ -453,7 +453,7 @@
     function isJavascriptIncluded($src) {
       return in_array($src, $this->inline_js);
     } // isJavascriptIncluded
-    
+
     /**
     * Get inline_js
     *
@@ -464,7 +464,7 @@
     function getInlineJS() {
       return $this->inline_js;
     } // getInlineJS
-    
+
     /**
     * Add inline JS entry
     *
@@ -475,7 +475,7 @@
     function addInlineJS($content) {
       $this->inline_js[] = $content;
     } // addInlineJS
-  
+
     /**
     * Return single PageDescription instance
     *
@@ -490,9 +490,9 @@
       } // if
       return $instance;
     } // instance
-    
+
   } // PageDescription
-    
+
   /**
   * Return page title
   *
@@ -502,7 +502,7 @@
   */
   function get_page_title() {
     $page = PageDescription::instance();
-    
+
     // If we dont have title use action
     if ($page->getTitle() == '') {
       $action = array_var($_GET, 'action');
@@ -511,7 +511,7 @@
       return $page->getTitle();
     } // if
   } // get_page_title
-  
+
   /**
   * Set page title
   *
@@ -522,7 +522,7 @@
   function set_page_title($value) {
     PageDescription::instance()->setTitle(clean($value));
   } // set_page_title
-  
+
   /**
   * Add external stylesheet file to page
   *
@@ -542,7 +542,7 @@
     if ($media) $attributes['media'] = $media;
     $page->addRelLink($href, 'Stylesheet', $attributes); // addRelLink
   } // add_stylesheet_to_page
-  
+
   /**
   * Add external JS to page
   *
@@ -554,7 +554,7 @@
     $page = PageDescription::instance();
     $page->addJavascript($src);
   } // add_javascript_to_page
-  
+
   /**
   * Add inline JS to page
   *
@@ -566,7 +566,7 @@
     $page = PageDescription::instance();
     $page->addInlineJS($content);
   } // add_inline_javascript_to_page
-  
+
   /**
   * Add inline CSS to page
   *
@@ -579,7 +579,7 @@
     $page = PageDescription::instance();
     $page->addInlineCSS($content, $condition);
   } // add_inline_css_to_page
-  
+
   /**
   * Return generated page meta code
   *
@@ -588,13 +588,13 @@
   * @return string
   */
   function render_page_meta() {
-    
+
     // Get page instance...
     $page = PageDescription::instance();
-    
+
     // Get meta...
     $meta = $page->getMeta();
-    
+
     // Generated code...
     $generated_code = '';
     if (is_array($meta) && count($meta)) {
@@ -604,12 +604,12 @@
       } // foreach
       $generated_code = implode("\n", $generated);
     } // if
-    
+
     // Return...
     return $generated_code;
-    
+
   } // render_page_meta
-  
+
   /**
   * Render page links
   *
@@ -618,38 +618,38 @@
   * @return string
   */
   function render_page_links() {
-    
+
     // Get page instance...
     $page = PageDescription::instance();
-    
+
     // Getlinks...
     $links = $page->getLinks();
-    
+
     // Prepare result
     $generated_code = '';
-    
+
     // If we have links go...
     if (is_array($links) && count($links)) {
       $generated = array();
       foreach ($links as $data) {
         $href = array_var($data, 'href');
 
-        
+
         $rel_or_rev = isset($data['rel']) ? 'rel' : 'rev';
         $rel = '';
         if (isset($data[$rel_or_rev])) {
           $rel = $data[$rel_or_rev];
           unset($data[$rel_or_rev]);
         } // if
-        
+
         $generated[] = link_tag($href, $rel_or_rev, $rel, $data);
       } // if
       $generated_code = implode("\n", $generated);
     } // if
-    
+
     return $generated_code;
   } // render_page_links
-  
+
   /**
   * Render page inline CSS
   *
@@ -658,39 +658,39 @@
   * @return string
   */
   function render_page_inline_css() {
-    
+
     // Get page instance...
     $page = PageDescription::instance();
-    
+
     // Get inline CSS
     $css = $page->getInlineCSS();
-    
+
     // Prepare result...
     $generated_code = '';
-    
+
     // And get code...
     if (is_array($css) && count($css)) {
       $generated = array();
       foreach ($css as $data) {
-        
+
         // Get...
         $content = array_var($data, 'content');
         $condition = array_var($data, 'condition');
-        
+
         // If we have content generate tag...
         if ($content) {
           $generated[] = style_tag($content, $condition);
         }
-        
+
       } // foreach
       $generated_code = implode("\n", $generated);
     } // if
-    
+
     // And done!
     return $generated_code;
-    
+
   } // render_page_inline_css
-  
+
   /**
   * Render javascript tags
   *
@@ -699,16 +699,16 @@
   * @return string
   */
   function render_page_javascript() {
-    
+
     // Get page instance...
     $page = PageDescription::instance();
-    
+
     // Get page javascript...
     $javascript = $page->getJavascript();
-    
+
     // Prepare result...
     $generated_code = '';
-    
+
     // Loop...
     if (is_array($javascript) && count($javascript)) {
       $generated = array();
@@ -717,12 +717,12 @@
       } // foreach
       $generated_code = implode("\n", $generated);
     } // if
-    
+
     // Done...
     return $generated_code;
-    
+
   } // render_page_javascript
-  
+
   /**
   * Render inline javascript
   *
@@ -731,16 +731,16 @@
   * @return string
   */
   function render_page_inline_js() {
-    
+
     // Get page instance...
     $page = PageDescription::instance();
-    
+
     // Get page javascript...
     $javascript = $page->getInlineJS();
-    
+
     // Prepare result...
     $generated_code = '';
-    
+
     // Loop...
     if (is_array($javascript) && count($javascript)) {
       $generated = array();
@@ -749,12 +749,12 @@
       } // foreach
       $generated_code = implode("\n", $generated);
     } // if
-    
+
     // Done...
     return $generated_code;
-    
+
   } // render_page_inline_js
-  
+
   /**
   * Render page head...
   *
@@ -764,16 +764,16 @@
   */
   function render_page_head() {
     $page = PageDescription::instance();
-    
+
     $head = render_page_links() . "\n" .
       render_page_meta() . "\n" .
       render_page_javascript() . "\n" .
       render_page_inline_js() . "\n" .
       render_page_inline_css();
-      
+
     return trim($head) . "\n";
   } // render_page_head
-  
+
   /**
   * Return URL relative to public folder
   *
@@ -784,7 +784,7 @@
     $base = trim(PUBLIC_FOLDER) == '' ? with_slash(ROOT_URL) : with_slash(with_slash(ROOT_URL) . PUBLIC_FOLDER);
     return $base . $rel;
   } // get_public_url
-  
+
   /**
   * Return URL of specific file in /public/files
   *
@@ -794,7 +794,7 @@
   function get_file_url($file_name) {
     return get_public_url('files/' . $file_name);
   } // get_file_url
-  
+
   /**
   * Return javascript URL
   *
@@ -807,7 +807,7 @@
     else
       return get_public_url('assets/javascript/' . $file_name);
   } // get_javascript_url
-  
+
   /**
   * Return URL of specific stylesheet
   *
@@ -816,7 +816,7 @@
   */
   function get_stylesheet_url($file_name) {
     static $theme = null;
-    
+
     if (is_null($theme)) {
       if (function_exists('config_option')) {
         $theme = config_option('theme');
@@ -825,10 +825,10 @@
         $theme = DEFAULT_THEME;
       } // if
     } // if
-    
+
     return get_public_url("assets/themes/$theme/stylesheets/$file_name");
   } // get_stylesheet_url
-  
+
   /**
   * Return image URl
   *
@@ -837,7 +837,7 @@
   */
   function get_image_url($file_name) {
     static $theme = null;
-    
+
     if (is_null($theme)) {
       if (function_exists('config_option')) {
         $theme = config_option('theme');
@@ -846,7 +846,7 @@
         $theme = DEFAULT_THEME;
       } // if
     } // if
-    
+
     return get_public_url("assets/themes/$theme/images/$file_name");
   } // get_image_url
 
