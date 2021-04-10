@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html><head><title>Public wiki</title>
-<link href="wwww.css" rel="Stylesheet" type="text/css" /> 
-<meta http-equiv="content-type" content="text/html; charset=utf-8" /> 
+<link href="wwww.css" rel="Stylesheet" type="text/css" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 </head><body id="body">
 <?php
 require '../../config/config.php';
@@ -10,23 +10,28 @@ require '../../environment/functions/general.php';
 //require '../../environment/environment.php';
 //require '../../application/plugins/wiki/helpers/wiki.php';
 
-
 function do_textile($text) {
   $textile = new Textile();
-  //$text = $textile->TextileRestricted($text, false, false); 
-  $text = $textile->TextileThis($text, false, false); 
+  //$text = $textile->TextileRestricted($text, false, false);
+  $text = $textile->TextileThis($text, false, false);
   //return $text;
   return add_links($text);
 } // do_textile
 
-
-function pp_pages() {
-  $pages = array(); 
+/**
+* Returns all pages
+*
+* @param resource link
+* @return string
+*/
+function pp_pages($link) {
+  if (!is_resource($link)) return "Error: No database connection!";
+  $pages = array();
   $prefix = str_replace('_', '_', DB_PREFIX);
   $sql = "SELECT a.`project_index`, c.`id` as project_id, a.`id` as page_id, c.`name` as project_name, b.`name` as page_name FROM `{$prefix}wiki_pages` a, `{$prefix}wiki_revisions` b, `{$prefix}projects` c WHERE a.`id` = b.`page_id` and a.`revision` = b.`revision` and a.`project_id` = c.`id` and a.`publish` = 1 order by b.`name`";
-  $result = mysql_query($sql);
+  $result = mysqli_query($link, $sql);
   if($result) {
-    while ($data = mysql_fetch_array($result)) {
+    while ($data = mysqli_fetch_array($result)) {
       $pages[] = $data;
     }
     return $pages;
@@ -34,21 +39,33 @@ function pp_pages() {
     return $pages;
   }
 }
-function pp_page($project_id, $page_id) {
-  $content = array(); 
+
+/**
+* Returns a single page from a specific project
+*
+* @param resource link
+* @param project_id int
+* @param page_id int
+* @return string
+*/
+function pp_page($link, $project_id, $page_id) {
+  if (!is_resource($link)) return "Error: No database connection!";
+  $content = array();
   $prefix = str_replace('_', '_', DB_PREFIX);
   $sql = "SELECT b.*, c.`name` as project_name, b.`name` as page_name FROM `{$prefix}wiki_pages` a, `{$prefix}wiki_revisions` b, `{$prefix}projects` c WHERE a.`id` = b.`page_id` and a.`revision` = b.`revision` and a.`project_id` = $project_id and a.`id` = $page_id and a.`project_id` = c.`id` and a.`publish` = 1 LIMIT 1";
-  $result = mysql_query($sql); 
-  if ($result) { 
-    while($row = mysql_fetch_array($result)) {
+  $result = mysqli_query($link, $sql);
+  if ($result) {
+    while($row = mysqli_fetch_array($link, $result)) {
       $content[] = $row;
     }
   }
   return $content;
 }
+
 function navitem($row) {
   return "<tr><td>{$row['project_name']}</td><td><a href=\"?project={$row['project_id']}&page={$row['page_id']}\">{$row['page_name']}</a></td></tr>";
 }
+
 function pp_content($project_id, $content) {
   $html = '';
   foreach($content as $page) {
@@ -66,7 +83,7 @@ function pp_wiki_links($project_id, $page_name, $content)
 {
   // TODO page name is the wrong name, should get name of page identified by $1 of match!!!!
   $url = '"'.$page_name.'($1)":http://www.2share.com/pp086/public/wiki/?project='.$project_id.'&page=$1';
-  return preg_replace('/\[wiki:([0-9]*)\]/', $url, $content);	
+  return preg_replace('/\[wiki:([0-9]*)\]/', $url, $content);
   //return wiki_links($content);
 }
 /*
@@ -98,13 +115,12 @@ function pp_wiki_links($project_id, $page_name, $content)
   } // try
 */
 
-mysql_connect(DB_HOST,DB_USER,DB_PASS)
-    or die("Couldn't connect!");
-mysql_select_db(DB_NAME);
-mysql_query("SET NAMES 'utf8'");
+$link = mysqli_connect(DB_HOST,DB_USER,DB_PASS,DB_NAME)
+    or die("Couldn't connect to database '" . DB_NAME . "' !");
+mysqli_query($link, "SET NAMES 'utf8'");
 $project_id = 0;
 $page_id = 0;
-$pages = pp_pages();
+$pages = pp_pages($link);
 $nav = '';
 foreach($pages as $row) {
   $nav .= navitem($row);
@@ -138,7 +154,7 @@ if (isset($_REQUEST['page'])) {
    <div id="pageContent">
     <div id="content">
      <!-- Content -->
-<?php echo pp_content($project_id, pp_page($project_id, $page_id)); ?>
+<?php echo pp_content($project_id, pp_page($link, $project_id, $page_id)); ?>
     </div>
     <div id="sidebar">
      <div class="sidebarBlock">

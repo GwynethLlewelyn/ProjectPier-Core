@@ -565,6 +565,26 @@
   * @return $string with content
   */
   function get_content_from_url($host, $port, $url) {
+    // Note: if cURL is available, this ought to be handled with cURL instead, because it will have
+    //  proper HTTPS support, etc. It's stupid to reinvent the wheel with fsockopen()... (gwyneth 20210411)
+    if (function_exists("curl_init")) {
+      // create curl resource
+      $ch = curl_init();
+
+      // set url
+      curl_setopt($ch, CURLOPT_URL, $host . (!empty($port) ? (":". $port) : "") . "/" . $url);
+
+      //return the transfer as a string
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+      // $data contains the output string
+      $data = curl_exec($ch);
+
+      // close curl resource to free up system resources
+      curl_close($ch);
+
+      return $data;
+    }
     $reply='';
     $fp = fsockopen($host, $port, $errno, $errstr, 30);
     if (!$fp) {
