@@ -37,6 +37,8 @@
     */
     public static $count=0;
 
+    const LOGGER_ENTRY_CONSTRUCT_LOG = INSTALLATION_PATH . "/cache/logger-entry.log";
+
     /**
     * Constructor
     *
@@ -46,10 +48,18 @@
     */
     public function __construct($message, $severity = Logger::DEBUG) {
       Logger_Entry::$count++;  // just to see how often this is called (gwyneth 20210411)
-      try {
-        if (Logger_Entry::$count % 10000 == 0) {
-          error_log("Logger_Entry instanciated " . Logger_Entry::$count . " times so far.");
+      // init special logging (gwyneth 20210411)
+      if (Logger_Entry::$count == 1) {
+        if (file_put_contents(LOGGER_ENTRY_CONSTRUCT_LOG, date("c") . ": Logging started for Logger_Entry::_construct()" === false)) {
+          error_log("Could not initialise special log for Logger_Entry!");
         }
+      }
+      error_log(date("c") . ": '" . $message . "' (count: " . $count . ")", 3, LOGGER_ENTRY_CONSTRUCT_LOG);
+      if (Logger_Entry::$count % 10000 == 0) {
+        error_log("Logger_Entry instanciated " . Logger_Entry::$count . " times so far.");
+      }
+
+      try {
         $this->setMessage($message);
         $this->setSeverity($severity);
         $this->setCreatedOn(microtime(true));
@@ -69,6 +79,8 @@
     */
     public function __destruct() {
       Logger_Entry::$count--;
+      error_log(date("c") . ": Removing one Logger_Entry: " . $count . " left.", 3, LOGGER_ENTRY_CONSTRUCT_LOG);
+      // TODO(gwyneth): probably we need to remove/rotate the file at some point (gwyneth 20210411)
       if ((Logger_Entry::$count % 10000 == 0)) {
         error_log("Logger_Entry::__destruct called; # of instances is now " . Logger_Entry::$count);
       }
