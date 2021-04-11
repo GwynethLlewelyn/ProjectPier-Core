@@ -18,6 +18,8 @@
     */
     static private $columns = array('id' => DATA_TYPE_INTEGER, 'category_name' => DATA_TYPE_STRING, 'name' => DATA_TYPE_STRING, 'value' => DATA_TYPE_STRING, 'config_handler_class' => DATA_TYPE_STRING, 'is_system' => DATA_TYPE_BOOLEAN, 'option_order' => DATA_TYPE_INTEGER, 'dev_comment' => DATA_TYPE_STRING);
 
+    static $instance;
+
     /**
     * Construct
     *
@@ -223,10 +225,14 @@
     *
     * @return ConfigOptions
     */
-    function instance() {
-      static $instance;
+    static function instance() {
+      // static $instance;
       if (!instance_of($instance, 'ConfigOptions')) {
-        $instance = new ConfigOptions();
+        try {
+          $instance = new ConfigOptions();
+        } catch (exception $e) {
+          error_log("BaseConfigOptions::instance() threw an error when creating a new ConfigOptions object: " . $e->getMessage());
+        }
       } // if
       return $instance;
     } // instance

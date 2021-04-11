@@ -7,28 +7,28 @@
   * @http://www.projectpier.org/
   */
   class Logger_Entry {
-    
+
     /**
     * Entry message
     *
     * @var string
     */
     private $message;
-    
+
     /**
     * Severity
     *
     * @var integer
     */
     private $severity;
-    
+
     /**
     * Time when this entry is created. It is microtime, not a DateTime
     *
     * @var float
     */
     private $created_on;
-  
+
     /**
     * Constructor
     *
@@ -36,15 +36,19 @@
     * @return Logger_Entry
     */
     function __construct($message, $severity = Logger::DEBUG) {
-      $this->setMessage($message);
-      $this->setSeverity($severity);
-      $this->setCreatedOn(microtime(true));
+      try {
+        $this->setMessage($message);
+        $this->setSeverity($severity);
+        $this->setCreatedOn(microtime(true));
+      } catch(exception $e) {
+        error_log("Logger_Entry::__construct() threw an error: " . $e->getMessage());
+      }
     } // __construct
-    
+
     /**
     * Return formated message
     *
-    * @param string $new_line_prefix Prefix that is put in front of every new line (so multiline 
+    * @param string $new_line_prefix Prefix that is put in front of every new line (so multiline
     * messages are indented and separated from the rest of the messages)
     * @return string
     */
@@ -54,11 +58,11 @@
       $message = str_replace("\n", "\n" . $new_line_prefix, $message);
       return $message;
     } // getformattedMessage
-    
+
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
-    
+
     /**
     * Get message
     *
@@ -68,7 +72,7 @@
     function getMessage() {
       return $this->message;
     } // getMessage
-    
+
     /**
     * Set message value
     *
@@ -78,7 +82,7 @@
     function setMessage($value) {
       $this->message = $value;
     } // setMessage
-    
+
     /**
     * Get severity
     *
@@ -88,7 +92,7 @@
     function getSeverity() {
       return $this->severity;
     } // getSeverity
-    
+
     /**
     * Set severity value
     *
@@ -98,7 +102,7 @@
     function setSeverity($value) {
       $this->severity = $value;
     } // setSeverity
-    
+
     /**
     * Get created_on
     *
@@ -108,7 +112,7 @@
     function getCreatedOn() {
       return $this->created_on;
     } // getCreatedOn
-    
+
     /**
     * Set created_on value
     *
@@ -118,7 +122,7 @@
     protected function setCreatedOn($value) {
       $this->created_on = $value;
     } // setCreatedOn
-  
+
   } // Logger_Entry
 
 ?>

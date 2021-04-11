@@ -67,7 +67,7 @@
     * @param void
     * @return array
     */
-    abstract function getColumns();
+    abstract static function getColumns();
 
     /**
     * Return column type
@@ -76,7 +76,7 @@
     * @param string $column_name
     * @return string
     */
-    abstract function getColumnType($column_name);
+    abstract static function getColumnType($column_name);
 
     /**
     * Return array of PK columns. If only one column is PK returns its name as string
@@ -85,7 +85,7 @@
     * @param void
     * @return array or string
     */
-    abstract function getPkColumns();
+    abstract static function getPkColumns();
 
     /**
     * Return name of first auto_incremenent column if it exists
@@ -94,7 +94,7 @@
     * @param void
     * @return string
     */
-    abstract function getAutoIncrementColumn();
+    abstract static function getAutoIncrementColumn();
 
     /**
     * Return array of lazy load columns
@@ -161,7 +161,7 @@
     * @return one or many objects
     * @throws DBQueryError
     */
-    function find($arguments = null) {
+    static function find($arguments = null) {
       trace(__FILE__,'find():begin');
 
       // Collect attributes...
@@ -252,7 +252,7 @@
     *   will be skipped and new data will be loaded from database
     * @return object
     */
-    function findById($id, $force_reload = false) {
+    static function findById($id, $force_reload = false) {
       trace(__FILE__,"findById($id, $force_reload)");
       return $this->load($id, $force_reload);
     } // findById
@@ -264,7 +264,7 @@
     * @param string $conditions Query conditions
     * @return integer
     */
-    function count($conditions = null) {
+    static function count($conditions = null) {
       // Don't do COUNT(*) if we have one PK column
       $escaped_pk = is_array($pk_columns = $this->getPkColumns()) ? '*' : DB::escapeField($pk_columns);
 
@@ -281,7 +281,7 @@
     * @param string $conditions Query conditions
     * @return boolean
     */
-    function delete($conditions = null) {
+    static function delete($conditions = null) {
       trace(__FILE__,"delete($conditions)");
       $conditions = $this->prepareConditions($conditions);
       $where_string = trim($conditions) == '' ? '' : "WHERE $conditions";
@@ -304,7 +304,7 @@
     * @param integer $current_page Current page number
     * @return array
     */
-    function paginate($arguments = null, $items_per_page = 10, $current_page = 1) {
+    static function paginate($arguments = null, $items_per_page = 10, $current_page = 1) {
       if (!is_array($arguments)) {
         $arguments = array();
       } // if
@@ -342,7 +342,7 @@
     *   and object data will be loaded from database
     * @return DataObject
     */
-    function load($id, $force_reload = false) {
+    static function load($id, $force_reload = false) {
       trace(__FILE__,"load($id, $force_reload)");
       // Is manager ready to do the job?
       if (!$this->isReady()) {
