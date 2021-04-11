@@ -136,11 +136,11 @@
 
       mysqli_query($this->database_connection, "rollback");
       mysqli_query($this->database_connection, "unlock tables");
-      mysqli_query($this->database_connection, "SET NAMES ? COLLATE ?",  $database_charset, 'utf8mb4_unicode_ci');
+      mysqli_query($this->database_connection, mysqli_real_escape_string($this->database_connection, sprintf("SET NAMES '%s' COLLATE '%s'", $database_charset, $database_charset . '_unicode_ci')));
       mysqli_query($this->database_connection, "SET SQL_MODE=''");
       mysqli_query($this->database_connection, "SET STORAGE_ENGINE=INNODB");
-      tpl_assign('default_collation', 'COLLATE utf8mb4_unicode_ci');
-      tpl_assign('default_charset', 'CHARACTER SET utf8mb4');
+      tpl_assign('default_collation', 'COLLATE ' . $database_charset . '_unicode_ci');
+      tpl_assign('default_charset', 'CHARACTER SET ' . $database_charset);
 
       mysqli_query($this->database_connection, 'BEGIN WORK');
 
