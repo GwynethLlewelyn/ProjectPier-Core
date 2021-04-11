@@ -124,6 +124,10 @@
         $this->addToChecklist('zend.ze1_compatibility_mode is set to On. This can cause some strange problems. It is strongly suggested to turn this value to Off (in your php.ini file)', false);
       } // if
 
+      if (empty(ini_get('session.auto_start')) || (strtolower(ini_get('session.auto_start')) == 'off')) {
+        $this->addToChecklist('session.auto_start seems to be unset or set to Off. In some systems this might get the session data a bit confused, so you may try to turn it On (in your php.ini file) and see if it works better that way', true);
+      } // if
+
       if ($all_ok) {
         return $this->isSubmitted();
       } // if
