@@ -44,7 +44,7 @@
       // We ought to use the system's defined path for saving sessions, because it might be in a place
       //  where it's not normally accesible by the web server (good practice!)
       //  In this case, we ought to check that we can write to it (gwyneth 20210411)
-      if !empty(ini_get('session.save_path')) {
+      if (!empty(ini_get('session.save_path'))) {
         array_push($this->check_is_writable, ini_get('session.save_path'));
       } // if
 
