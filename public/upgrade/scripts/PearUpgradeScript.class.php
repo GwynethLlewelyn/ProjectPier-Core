@@ -7,7 +7,7 @@
   * @http://www.projectpier.org/
   */
   class PearUpgradeScript extends ScriptUpgraderScript {
-  
+
     /**
     * Database connection link
     *
@@ -16,7 +16,7 @@
     private $database_connection = null;
     private $default_collation = '';
     private $default_charset = '';
-  
+
     /**
     * Construct the PearUpgradeScript
     *
@@ -28,7 +28,7 @@
       $this->setVersionFrom('0.8.0.3');
       $this->setVersionTo('0.8.6');
     } // __construct
-    
+
     /**
     * Execute the script
     *
@@ -37,11 +37,11 @@
     */
     function execute() {
       define('ROOT', realpath(dirname(__FILE__) . '/../../../'));
-      
+
       // ---------------------------------------------------
       //  Load config
       // ---------------------------------------------------
-      
+
       $config_is_set = require_once INSTALLATION_PATH . '/config/config.php';
       if (!$config_is_set) {
         $this->printMessage('Valid config files was not found!', true);
@@ -49,67 +49,61 @@
       } else {
         $this->printMessage('Config file found and loaded.');
       } // if
-      
+
       if (PRODUCT_VERSION == '0.8.6') {
         $this->printMessage('You are already running ProjectPier 0.8.6');
         return true;
       } // if
-      
+
       if (PRODUCT_VERSION !== '0.8.0.3') {
         $this->printMessage('This upgrade script can be used only to upgrade 0.8.0.3 to 0.8.6', true);
         return false;
       } // if
-      
+
       // ---------------------------------------------------
       //  Connect to database
       // ---------------------------------------------------
-      
-      if ($this->database_connection = mysql_connect(DB_HOST, DB_USER, DB_PASS)) {
+
+      if ($this->database_connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME)) {
         $this->printMessage('Upgrade script has connected to database ' . DB_NAME);
-        if (mysql_select_db(DB_NAME, $this->database_connection)) {
-          $this->printMessage('Upgrade selected database ' . DB_NAME);
-        } else {
-          $this->printMessage('Failed to select database ' . DB_NAME);
-          return false;
-        } // if
       } else {
         $this->printMessage('Failed to connect to database ' . DB_HOST);
         return false;
       } // if
-      
+
       // ---------------------------------------------------
       //  Check MySQL version
       // ---------------------------------------------------
-      
-      $mysql_version = mysql_get_server_info($this->database_connection);
+
+      $mysql_version = mysqli_get_server_info($this->database_connection);
       if ($mysql_version && version_compare($mysql_version, '4.1', '>=')) {
         $constants['DB_CHARSET'] = 'utf8mb4';
-        mysql_query("SET NAMES 'utf8mb4'", $this->database_connection);
+        mysqli_query($this->database_connection, "SET NAMES 'utf8mb4'");
         tpl_assign('default_collation', $this->default_collation = 'collate utf8mb4_unicode_ci');
         tpl_assign('default_charset', $this->default_charset = 'DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
       } else {
         tpl_assign('default_collation', $this->default_collation = '');
         tpl_assign('default_charset', $this->default_charset = '');
       } // if
-      
+
       tpl_assign('table_prefix', TABLE_PREFIX);
-      
+
       // ---------------------------------------------------
       //  Check test query
       // ---------------------------------------------------
-      
+
       $test_table_name = TABLE_PREFIX . 'test_table';
       $test_table_sql = "CREATE TABLE `$test_table_name` (
         `id` int(10) unsigned NOT NULL auto_increment,
         `name` varchar(50) $this->default_collation NOT NULL default '',
         PRIMARY KEY  (`id`)
       ) ENGINE=InnoDB $this->default_charset;";
-      
-      if (mysql_query($test_table_sql, $this->database_connection)) {
+
+      if (mysqli_query($this->database_connection, $test_table_sql)) {
         $this->printMessage('Test query has been executed. It is safe to proceed with database migration.');
-        mysql_query("DROP TABLE `$test_table_name`", $this->database_connection);
+        mysqli_query($this->database_connection, "DROP TABLE `$test_table_name`");
       } else {
-        $this->printMessage('Failed to executed test query. MySQL said: ' . mysql_error($this->database_connection), true);
+        $this->printMessage('Failed to executed test query. MySQL said: ' . mysqli_error($this->database_connection), true);
         return false;
       } // if
 
@@ -122,26 +116,26 @@
       // ---------------------------------------------------
       //  Execute migration
       // ---------------------------------------------------
-      
-      mysql_query('BEGIN WORK');
-      
+
+      mysqli_query($this->database_connection, 'BEGIN WORK');
+
       if ($this->upgradePermissions() === false) {
-        mysql_query('ROLLBACK');
+        mysqli_query($this->database_connection, 'ROLLBACK');
         $this->printMessage('Upgrade process failed!', true);
         return false;
       } // if
       if ($this->addPluginsTable() === false) {
-        mysql_query('ROLLBACK');
+        mysqli_query($this->database_connection, 'ROLLBACK');
         $this->printMessage('Upgrade process failed!', true);
         return false;
       } // if
        if ($this->fixConfigFile() === false) {
-         mysql_query('ROLLBACK');
+         mysqli_query($this->database_connection, 'ROLLBACK');
          $this->printMessage('Upgrade process failed!', true);
          return false;
       } // if
-      
-      if (mysql_query('COMMIT')) {
+
+      if (mysqli_query($this->database_connection, 'COMMIT')) {
         $this->printMessage('ProjectPier has been upgraded. You are now running ProjectPier 0.8.6. Enjoy!');
         return true;
       } else {
@@ -149,7 +143,7 @@
         return false;
       } // if
     } // execute
-    
+
     function upgradePermissions() {
       $this->printMessage('Migrating to new permissions system.');
       $permissions_table = TABLE_PREFIX . 'permissions';
@@ -191,25 +185,25 @@ PRIMARY KEY(`user_id`,`project_id`,`permission_id`)
         `permission` varchar(100) NOT NULL default '',
         PRIMARY KEY  (`id`)
       ) ".$this->default_charset;
-      
-      if (!mysql_query($create_permissions_table_query)) {
-        $this->printMessage("Failed to create permissions table. Error ".mysql_errno($this->database_connection) . ": " . mysql_error($this->database_connection),true);
-        return false;
-      } // if
-      
-      if (!mysql_query($insert_permissions_query)) {
-        $this->printMessage("Failed to insert permissions tuples. Error ".mysql_errno($this->database_connection) . ": " . mysql_error($this->database_connection),true);
+
+      if (!mysqli_query($this->database_connection, $create_permissions_table_query)) {
+        $this->printMessage("Failed to create permissions table. Error ".mysqli_errno($this->database_connection) . ": " . mysqli_error($this->database_connection),true);
         return false;
       } // if
 
-      if (!mysql_query($create_project_user_permissions_table_query)) {
-        $this->printMessage("Failed to create project_user_permissions table. Error ".mysql_errno($this->database_connection) . ": " . mysql_error($this->database_connection),true);
+      if (!mysqli_query($this->database_connection, $insert_permissions_query)) {
+        $this->printMessage("Failed to insert permissions tuples. Error ".mysqli_errno($this->database_connection) . ": " . mysqli_error($this->database_connection),true);
+        return false;
+      } // if
+
+      if (!mysqli_query($this->database_connection, $create_project_user_permissions_table_query)) {
+        $this->printMessage("Failed to create project_user_permissions table. Error ".mysqli_errno($this->database_connection) . ": " . mysqli_error($this->database_connection),true);
         return false;
       } // if
 
       $pup_query = "select project_id, user_id, project_users.* FROM project_users";
-      if ($result = mysql_query($pup_query)) {
-        while ($row = mysql_fetch_assoc($result)) {
+      if ($result = mysqli_query($this->database_connection, $pup_query)) {
+        while ($row = mysqli_fetch_assoc($result)) {
           $project_id = array_shift($row);
           $user_id = array_shift($row);
           foreach ($row as $permission => $value) {
@@ -222,8 +216,8 @@ PRIMARY KEY(`user_id`,`project_id`,`permission_id`)
                 continue;
               } // if
               $sql = sprintf("INSERT INTO `%s` (`project_id`,`user_id`,`permission_id`) VALUES (%d,%d,%d)",$project_user_permissions_table,$project_id,$user_id,$permissionMap[$permission]);
-              if(!mysql_query($sql)) {
-                $this->printMessage("Failed to insert a (project,user,permission) tuple. Error ".mysql_errno($this->database_connection) . ": " . mysql_error($this->database_connection),true);
+              if(!mysqli_query($this->database_connection, $sql)) {
+                $this->printMessage("Failed to insert a (project,user,permission) tuple. Error ".mysqli_errno($this->database_connection) . ": " . mysqli_error($this->database_connection),true);
                 return false;
               } // if
             } // if
@@ -231,13 +225,13 @@ PRIMARY KEY(`user_id`,`project_id`,`permission_id`)
         } // while
         foreach (array_keys($permissionMap) as $column) {
           $alter_query = "ALTER TABLE `$project_users_table` drop column $column";
-          if (!mysql_query($alter_query)) {
-            $this->printMessage("Failed to drop permission columns from project_users table. Error ".mysql_errno($this->database_connection) . ": " . mysql_error($this->database_connection),true);
+          if (!mysqli_query($this->database_connection, $alter_query)) {
+            $this->printMessage("Failed to drop permission columns from project_users table. Error ".mysqli_errno($this->database_connection) . ": " . mysqli_error($this->database_connection),true);
             return false;
           } // if
         } // foreach
       } else {
-        $this->printMessage("Failed to retrieve current (project,user) permissions. Error ".mysql_errno($this->database_connection) . ": " . mysql_error($this->database_connection),true);
+        $this->printMessage("Failed to retrieve current (project,user) permissions. Error ".mysqli_errno($this->database_connection) . ": " . mysqli_error($this->database_connection),true);
         return false;
       } // if
       return true;
@@ -254,12 +248,12 @@ PRIMARY KEY(`user_id`,`project_id`,`permission_id`)
   PRIMARY KEY  (`plugin_id`)
 ) ENGINE=InnoDB ".$this->default_charset;
 
-      if (!mysql_query($create_plugins_table_query)) {
+      if (!mysqli_query($this->database_connection, $create_plugins_table_query)) {
         return false;
       } // if
       return true;
     } // addPluginTable
-    
+
     /**
     * This function will fix configuration file
     *
@@ -286,6 +280,6 @@ PRIMARY KEY(`user_id`,`project_id`,`permission_id`)
         return false;
       } // if
     } // fixConfigFile
-      
+
   } // PearUpgradeScript
 ?>

@@ -93,7 +93,7 @@
       $installkey       = sha1(date('l dS \of F Y h:i:s A').$_SERVER['REMOTE_ADDR'].rand(10000,99999));
 
       $connected = false;
-      if ($this->database_connection = mysqli _connect($database_host, $database_user, $database_pass, $database_name)) {
+      if ($this->database_connection = mysqli_connect($database_host, $database_user, $database_pass, $database_name)) {
         $connected = true; // simpler on mysqli (gwyneth 20210410)
       } // if
 
@@ -142,7 +142,7 @@
       tpl_assign('default_collation', 'COLLATE utf8mb4_unicode_ci');
       tpl_assign('default_charset', 'CHARACTER SET utf8mb4');
 
-      mysql_query($this->database_connection, 'BEGIN WORK');
+      mysqli_query($this->database_connection, 'BEGIN WORK');
 
       // Database construction
       $total_queries = 0;

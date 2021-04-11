@@ -16,7 +16,7 @@ function dbtype_datatype($attributes) {
   if ($dbname=='goal') return 'PERCENT';
   if ($dbname=='score') return 'PERCENT';
   $dbtype = $attributes['Type'];
-  static $dbdt = array( 
+  static $dbdt = array(
     'xint(11) unsigned' => 'ID',
     'int(10) unsigned' => 'ID',
     'xint(10)' => 'ID',
@@ -45,28 +45,26 @@ function dbtype_datatype($attributes) {
   return $dbtype;
 }
 
-$link = mysql_connect(DB_HOST, DB_USER, DB_PASS) or die('Could not connect to database server ' . DB_HOST);
-mysql_select_db(DB_NAME, $link) or die('Could not select database ' . DB_NAME);
+$link = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME) or die('Could not connect to database server ' . DB_HOST . ' and/or select database ' . DB_NAME);
 
 $tables = array();
-$result = mysql_query('SHOW TABLES LIKE \''.DB_PREFIX .'%\'');
-//$result = mysql_query('SHOW TABLES');
-while ($row = mysql_fetch_row($result)) {
+$result = mysqli_query($link,'SHOW TABLES LIKE \''.DB_PREFIX .'%\'');
+while ($row = mysqli_fetch_row($result)) {
   $tables[$row[0]] = array();
 }
-		
+
 foreach ($tables as $table_name => $nothing) {
-  $result = mysql_query('SHOW COLUMNS FROM ' . $table_name, $link);
-  while ($row = mysql_fetch_assoc($result)) {
+  $result = mysqli_query($link, 'SHOW COLUMNS FROM ' . $table_name, $link);
+  while ($row = mysqli_fetch_assoc($result)) {
     $tables[$table_name][$row['Field']] = $row;
   }
 }
 //var_dump($tables);
-mysql_close($link);
+mysqli_close($link);
 $count=0;
 $s = '';
 $h = false;
-foreach($tables as $table_name => $fields) {  
+foreach($tables as $table_name => $fields) {
   foreach($fields as $attributes) {
     $count++;
     $tname = str_replace(DB_PREFIX, '', $table_name );

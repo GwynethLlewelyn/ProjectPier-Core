@@ -7,14 +7,14 @@
   * @http://www.projectpier.org/
   */
   class RhubarbUpgradeScript extends ScriptUpgraderScript {
-  
+
     /**
     * Database connection link
     *
     * @var resource
     */
     private $database_connection = null;
-  
+
     /**
     * Construct the RhubarbUpgradeScript
     *
@@ -26,7 +26,7 @@
       $this->setVersionFrom('0.8.0');
       $this->setVersionTo('0.8.0.3');
     } // __construct
-    
+
     /**
     * Execute the script
     *
@@ -35,97 +35,92 @@
     */
     function execute() {
       define('ROOT', realpath(dirname(__FILE__) . '/../../../'));
-      
+
       // ---------------------------------------------------
       //  Load config
       // ---------------------------------------------------
-      
+
       $config_is_set = require_once INSTALLATION_PATH . '/config/config.php';
       if (!$config_is_set) {
         $this->printMessage('Valid config file was not found!', true);
         return false;
       } else {
         $this->printMessage('Config file found and loaded.');
-      } 
-      
+      }
+
       if (PRODUCT_VERSION == '0.8.0.3') {
         $this->printMessage('You are already running ProjectPier 0.8.0.3');
         return true;
       }
-      
+
       if (PRODUCT_VERSION !== '0.7.1' &&
           preg_match('/^0\.8\.0(?:\.[0-3])?$/', PRODUCT_VERSION) == 0) {
         $this->printMessage('This upgrade script can be used only to upgrade 0.7.1 or 0.8.0.x to 0.8.0.3', true);
         return false;
       }
-      
+
       // ---------------------------------------------------
       //  Connect to database
       // ---------------------------------------------------
-      
-      if ($this->database_connection = mysql_connect(DB_HOST, DB_USER, DB_PASS)) {
-        if (mysql_select_db(DB_NAME, $this->database_connection)) {
+
+      if ($this->database_connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME)) {
           $this->printMessage('Upgrade script has connected to the database.');
-        } else {
-          $this->printMessage('Failed to select database ' . DB_NAME);
-          return false;
-        } // if
       } else {
         $this->printMessage('Failed to connect to database');
         return false;
       } // if
-      
+
       // ---------------------------------------------------
       //  Check MySQL version
       // ---------------------------------------------------
-      
-      $mysql_version = mysql_get_server_info($this->database_connection);
+
+      $mysql_version = mysqli_get_server_info($this->database_connection);
       if ($mysql_version && version_compare($mysql_version, '4.1', '>=')) {
         $constants['DB_CHARSET'] = 'utf8mb4';
-        mysql_query("SET NAMES 'utf8mb4'", $this->database_connection);
+        mysqli_query($this->database_connection, "SET NAMES 'utf8mb4'");
         tpl_assign('default_collation', $default_collation = 'collate utf8mb4_unicode_ci');
         tpl_assign('default_charset', $default_charset = 'DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
       } else {
         tpl_assign('default_collation', $default_collation = '');
         tpl_assign('default_charset', $default_charset = '');
       } // if
-      
+
       tpl_assign('table_prefix', TABLE_PREFIX);
-      
+
       // ---------------------------------------------------
       //  Check test query
       // ---------------------------------------------------
-      
+
       $test_table_name = TABLE_PREFIX . 'test_table';
       $test_table_sql = "CREATE TABLE `$test_table_name` (
         `id` int(10) unsigned NOT NULL auto_increment,
         `name` varchar(50) $default_collation NOT NULL default '',
         PRIMARY KEY  (`id`)
       ) ENGINE=InnoDB $default_charset;";
-      
-      if (mysql_query($test_table_sql, $this->database_connection)) {
+
+      if (mysqli_query($this->database_connection, $test_table_sql)) {
         $this->printMessage('Test query has been executed. Its safe to proceed with database migration.');
-        mysql_query("DROP TABLE `$test_table_name`", $this->database_connection);
+        mysqli_query($this->database_connection, "DROP TABLE `$test_table_name`");
       } else {
-        $this->printMessage('Failed to executed test query. MySQL said: ' . mysql_error($this->database_connection), true);
+        $this->printMessage('Failed to executed test query. MySQL said: ' . mysqli_error($this->database_connection), true);
         return false;
-      } 
-      
+      }
+
       //return ;
-      
+
       // ---------------------------------------------------
       //  Execute migration
       // ---------------------------------------------------
-      
-      mysql_query('BEGIN WORK');
-      
+
+      mysqli_query($this->database_connection, 'BEGIN WORK');
+
       if ($this->fixTimezone() === false) {
-        mysql_query('ROLLBACK');
+        mysqli_query($this->database_connection, 'ROLLBACK');
         $this->printMessage('Upgrade process failed!', true);
         return false;
       }
-      
-      if (!mysql_query('COMMIT')) {
+
+      if (!mysqli_query($this->database_connection, 'COMMIT')) {
         $this->printMessage('Failed to commit updates. Upgrade process failed!', true);
         return false;
       }
@@ -143,23 +138,23 @@
     */
     function fixTimezone() {
       $users_table = TABLE_PREFIX . 'users';
-      if (mysql_query("ALTER TABLE `$users_table` MODIFY COLUMN `timezone` FLOAT(3,1) NOT NULL DEFAULT '0.0'", $this->database_connection)) {
+      if (mysqli_query($this->database_connection, "ALTER TABLE `$users_table` MODIFY COLUMN `timezone` FLOAT(3,1) NOT NULL DEFAULT '0.0'")) {
         $this->printMessage('Users table has been updated');
       } else {
-        $this->printMessage('Failed to update users table. MySQL said: ' . mysql_error($this->database_connection), true);
+        $this->printMessage('Failed to update users table. MySQL said: ' . mysqli_connect()_error($this->database_connection), true);
         return false;
       }
       $companies_table = TABLE_PREFIX . 'companies';
-      if (mysql_query("ALTER TABLE `$companies_table` MODIFY COLUMN `timezone` FLOAT(3,1) NOT NULL DEFAULT '0.0'", $this->database_connection)) {
+      if (mysqli_query($this->database_connection, "ALTER TABLE `$companies_table` MODIFY COLUMN `timezone` FLOAT(3,1) NOT NULL DEFAULT '0.0'")) {
         $this->printMessage('Companies table has been updated');
       } else {
-        $this->printMessage('Failed to update companies table. MySQL said: ' . mysql_error($this->database_connection), true);
+        $this->printMessage('Failed to update companies table. MySQL said: ' . mysqli_error($this->database_connection), true);
         return false;
       }
       return true;
     }
-    
-      
+
+
     /**
     * This function will update the configuration file
     *
@@ -195,7 +190,7 @@
       //----------------------------------------------------------
       if (defined('TOKEN_COOKIE_NAME') ) {
         $constants['TOKEN_COOKIE_NAME'] = TOKEN_COOKIE_NAME ;
-      } 
+      }
 
       //----------------------------------------------------------
       // Replace default values with previously-defined values, if they exist.
@@ -204,7 +199,7 @@
         if (defined($config_key)) {
           $constants[$config_key] = constant($config_key);
         } // if
-      } // foreach 
+      } // foreach
 
       //----------------------------------------------------------
       // Insert changes to existing config
@@ -223,7 +218,7 @@
         return false;
       } // if
     } // fixConfigFile
-  
+
 
   } // RhubarbUpgradeScript
 

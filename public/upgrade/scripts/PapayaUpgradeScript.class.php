@@ -63,14 +63,8 @@
       // ---------------------------------------------------
 
       if ($this->database_connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME)) {
-//        if (mysql_select_db(DB_NAME, $this->database_connection)) {
           $this->printMessage('Upgrade script has connected to the database.');
           // getting rid of superfluous code when using mysqli_connect (gwyneth 20210411)
-/*        } else {
-          $this->printMessage('Failed to select database ' . DB_NAME);
-          return false;
-        } // if
-*/
       } else {
         $this->printMessage('Failed to connect to database');
         return false;

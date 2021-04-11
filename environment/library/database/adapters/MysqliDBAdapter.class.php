@@ -34,14 +34,9 @@
         throw new DBConnectError($host, $user, $pass, $database, $e->errorMessage());
       } // try-catch
       if (!is_resource($link)) {  // should have been caught before, but if it isn't... (gwyneth 20210410)
-        throw new DBConnectError($host, $user, $pass, $database, "Uncaught error when connecting to database; returned a non-resource");
+        throw new DBConnectError($host, $user, $pass, $database, "Uncaught error when connecting to database $database; returned a non-resource");
       } // if
 
-//       // mysqli driver does not need for databases to be "selected" (gwyneth 20210410)
-//       if (!@mysql_select_db($database, $link)) {
-//         throw new DBConnectError($host, $user, $pass, $database);
-//       } // if
-//
       /* Set the desired charset after establishing a connection */
       mysqli_set_charset($link, 'utf8mb4mb4');  // recommended after 2020 AD (gwyneth 20210410)
 
