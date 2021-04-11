@@ -73,7 +73,7 @@
 
       foreach ($tables_to_check as $table) {
         $test_table_exists_sql = "SHOW TABLES LIKE '".TABLE_PREFIX."$table';";
-        if (mysqli_num_rows(mysqli_query($this->database_connection, $test_table_exists_sql)) {
+        if (mysqli_num_rows(mysqli_query($this->database_connection, $test_table_exists_sql))) {
           $this->printMessage("Table ".TABLE_PREFIX."$table already exists. It is recommended to proceed with the upgrade manually.", true);
           return false;
         }
