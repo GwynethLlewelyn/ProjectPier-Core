@@ -1,42 +1,42 @@
 <?php
 
   /**
-  * Loggers sessions are sets of logged messages. They are introduces so logger can 
+  * Loggers sessions are sets of logged messages. They are introduces so logger can
   * handle multiple events at the same time without mixing the messages
   *
   * @package Logger
   * @http://www.projectpier.org/
   */
   class Logger_Session {
-  
+
     /**
     * Session name
     *
     * @var string
     */
     private $name;
-    
+
     /**
     * Minimal severity that will be logged. In debug mode it would be Logger::DEBUG, in production it should be Logger::FATAL
     *
     * @var integer
     */
     private $min_severity;
-    
+
     /**
     * Start time of the session
     *
     * @var float
     */
     private $session_start;
-    
+
     /**
     * Array of log entries
     *
     * @var array
     */
     private $entries = array();
-    
+
     /**
     * Constructor
     *
@@ -49,7 +49,7 @@
       $this->setMinSeverity($severity);
       $this->session_start = microtime(true);
     } // __construct
-    
+
     /**
     * Return true if this session is empty
     *
@@ -59,11 +59,11 @@
     function isEmpty() {
       return count($this->entries) < 1;
     } // isEmpty
-    
+
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
-    
+
     /**
     * Get name
     *
@@ -73,7 +73,7 @@
     function getName() {
       return $this->name;
     } // getName
-    
+
     /**
     * Set name value
     *
@@ -83,7 +83,7 @@
     function setName($value) {
       $this->name = $value;
     } // setName
-    
+
     /**
     * Get min_severity
     *
@@ -93,7 +93,7 @@
     function getMinSeverity() {
       return $this->min_severity;
     } // getMinSeverity
-    
+
     /**
     * Set min_severity value
     *
@@ -103,9 +103,9 @@
     function setMinSeverity($value) {
       $this->min_severity = $value;
     } // setMinSeverity
-    
+
     /**
-    * Return session start time (it is calculated in the constructor). Session start is unix 
+    * Return session start time (it is calculated in the constructor). Session start is unix
     * timestamp with microtimes as part of the second
     *
     * @param void
@@ -114,7 +114,7 @@
     function getSessionStart() {
       return $this->session_start;
     } // getSessionStart
-    
+
     /**
     * Return entries
     *
@@ -124,7 +124,7 @@
     function getEntries() {
       return $this->entries;
     } // getEntries
-    
+
     /**
     * Add entry to the session
     *
@@ -132,13 +132,22 @@
     * @return null
     */
     function addEntry(Logger_Entry $entry) {
-      if ($entry->getSeverity() >= $this->getMinSeverity()) {
-        $this->entries[] = $entry;
-        return true;
+      if (!empty($entry) && is_object($entry)) {
+        if ($entry->getSeverity() >= $this->getMinSeverity()) {
+          try {
+            $this->entries[] = $entry;
+          } catch(exception $e) {
+            error_log("Logger_Session::addEntry() failed to log entry '" . $entry . "', possibly due to lack of memory. Error was: ", $e->getMessage());
+            return false;
+          }
+          return true;
+        }
+        return false;  // getSeverity is less than getMinSeverity, but this is not really an error (gwyneth 20210411)
       } // if
+      error_log("Logger_Session::addEntry() got either a null entry or entry was not a proper object");
       return false;
     } // addEntry
-  
+
   } // Logger_Session
 
 ?>
