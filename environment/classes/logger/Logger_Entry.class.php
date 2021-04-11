@@ -50,13 +50,13 @@
       Logger_Entry::$count++;  // just to see how often this is called (gwyneth 20210411)
       // init special logging (gwyneth 20210411)
       if (Logger_Entry::$count == 1) {
-        if (file_put_contents(Logger_Entry::LOGGER_ENTRY_CONSTRUCT_LOG, date("c") . "\tLogging started for Logger_Entry::_construct()" . PHP_EOL . PHP_EOL, LOCK_EX) === false) {
+        if (file_put_contents(Logger_Entry::LOGGER_ENTRY_CONSTRUCT_LOG, date("c") . "\tLogging started for Logger_Entry::__construct()" . PHP_EOL . PHP_EOL, LOCK_EX) === false) {
           error_log("Could not initialise special log for Logger_Entry!");
         }
       }
       file_put_contents(Logger_Entry::LOGGER_ENTRY_CONSTRUCT_LOG, date("c") . "\t'" . $message . "' (count: " . Logger_Entry::$count . ")" . PHP_EOL, FILE_APPEND | LOCK_EX);
       if (Logger_Entry::$count % 100000 == 0) {
-        error_log("Logger_Entry instanciated " . Logger_Entry::$count . " times so far.");
+        error_log("Logger_Entry::__construct() called " . Logger_Entry::$count . " times so far.");
       }
 
       try {
@@ -82,7 +82,7 @@
       file_put_contents(Logger_Entry::LOGGER_ENTRY_CONSTRUCT_LOG, date("c") . "\tRemoving one Logger_Entry: " . Logger_Entry::$count . " left.", FILE_APPEND | LOCK_EX);
       // TODO(gwyneth): probably we need to remove/rotate the file at some point (gwyneth 20210411)
       if ((Logger_Entry::$count % 100000 == 0)) {
-        error_log("Logger_Entry::__destruct called; # of instances is now " . Logger_Entry::$count);
+        error_log("Logger_Entry::__destruct called; # of active instances is now " . Logger_Entry::$count);
       }
     }
 

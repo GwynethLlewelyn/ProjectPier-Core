@@ -51,13 +51,13 @@
       BaseConfigOptions::$count++;  // just to see how often this is called (gwyneth 20210411)
       // init special logging (gwyneth 20210411)
       if (BaseConfigOptions::$count == 1) {
-        if (file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tLogging started for Logger_Entry::_construct()" . PHP_EOL . PHP_EOL, LOCK_EX) === false) {
+        if (file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tLogging started for BaseConfigOptions::__construct()" . PHP_EOL . PHP_EOL, LOCK_EX) === false) {
           error_log("Could not initialise special log for BaseConfigOptions!");
         }
       }
-      file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\t'" . $message . "' (count: " . BaseConfigOptions::$count . ")" . PHP_EOL, FILE_APPEND | LOCK_EX);
+      file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::__construct() called " . BaseConfigOptions::$count . " times so far." . PHP_EOL, FILE_APPEND | LOCK_EX);
       if (BaseConfigOptions::$count % 100000 == 0) {
-        error_log("BaseConfigOptions instanciated " . BaseConfigOptions::$count . " times so far.");
+        error_log("BaseConfigOptions::__construct() called " . BaseConfigOptions::$count . " times so far.");
       }
       try {
         parent::__construct('ConfigOption', 'config_options', true);
@@ -283,6 +283,7 @@
     static function instance() {
       static $instance;
       if (!instance_of($instance, 'ConfigOptions')) {
+        file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::instance() called, and we need to create a new ConfigOptions instance" . PHP_EOL, FILE_APPEND | LOCK_EX);
         $instance = new ConfigOptions();
       } // if
       return $instance;
