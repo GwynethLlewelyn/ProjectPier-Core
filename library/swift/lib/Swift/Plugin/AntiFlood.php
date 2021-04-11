@@ -45,18 +45,18 @@ class Swift_Plugin_AntiFlood implements Swift_IPlugin
 	/**
 	 * The maximum number of messages to send
 	 * over a single connection
-	 * @var int max messages
+	 * @var integer max messages
 	 */
 	public $maxMessages;
 	/**
 	 * The time to wait for before reconnecting
-	 * @var int sleep seconds
+	 * @var integer sleep seconds
 	 */
 	public $sleep;
 	/**
 	 * Current messages sent since last reconnect
 	 * or plugin loading.
-	 * @var int current messages
+	 * @var integer current messages
 	 */
 	protected $currMessages = 0;
 	/**

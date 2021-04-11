@@ -84,7 +84,7 @@ class Swift_Connection_Rotator implements Swift_IConnection
 	public $connectionIdex = 0;
 	/**
 	 * Last index in connections tried
-	 * @var int index
+	 * @var integer index
 	 */
 	private $lastIndex = -1;
 	/**

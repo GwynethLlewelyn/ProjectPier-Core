@@ -25,9 +25,16 @@
     /**
     * Time when this entry is created. It is microtime, not a DateTime
     *
-    * @var float
+    * @var integer
     */
     private $created_on;
+
+    /**
+    * Counter to give an idea on how many times this is being called and _not_ destoyed
+    *
+    * @var float
+    */
+    public static $count=0;
 
     /**
     * Constructor

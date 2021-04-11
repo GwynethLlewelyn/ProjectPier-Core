@@ -55,7 +55,7 @@ class Swift_Authenticator_POP3SMTP implements Swift_IAuthenticator
 	protected $baseObject;
 	/**
 	 * The port we need to connect to
-	 * @var int $port
+	 * @var integer $port
 	 */
 	protected $port;
 	/**

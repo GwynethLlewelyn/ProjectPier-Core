@@ -245,7 +245,7 @@ class Swift
 	private $from;
 	/**
 	 * Priority value 1 (high) to 5 (low)
-	 * @var int priority (1-5)
+	 * @var integer priority (1-5)
 	 */
 	private $priority = 3;
 	/**
@@ -256,7 +256,7 @@ class Swift
 	/**
 	 * The max number of entires that can exist in the log
 	 * (saves memory)
-	 * @var int log size
+	 * @var integer log size
 	 */
 	private $maxLogSize = 30;
 	/**
@@ -340,17 +340,17 @@ class Swift
 	public $lastResponse;
 	/**
 	 * The total number of failed recipients
-	 * @var int failed
+	 * @var integer failed
 	 */
 	private $failCount = 0;
 	/**
 	 * Number of failed recipients for this email
-	 * @var int failed
+	 * @var integer failed
 	 */
 	private $subFailCount = 0;
 	/**
 	 * Number of addresses expected to pass this email
-	 * @var int recipients
+	 * @var integer recipients
 	 */
 	private $numAddresses;
 	/**
