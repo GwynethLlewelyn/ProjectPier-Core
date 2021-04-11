@@ -8,31 +8,31 @@
   * @http://www.projectpier.org/
   */
   final class DB {
-    
+
     /** ID of primary connection **/
     const PRIMARY_CONNECTION_ID = 'PRIMARY';
-    
+
     /**
     * Collection of connections
     *
     * @var array
     */
     static private $connections = array();
-    
+
     /**
     * ID of primary connection. This connection will be used if connection name is not suplied
     *
     * @var string
     */
     static private $primary_connection = self::PRIMARY_CONNECTION_ID;
-    
+
     /**
     * SQL log
     *
     * @var array
     */
     static private $sql_log = array();
-    
+
     /**
     * This function will return specific connection. If $connection_name is NULL primary connection will be used
     *
@@ -46,7 +46,7 @@
       } // if
       return array_var(self::$connections, $connection_name);
     } // connection
-    
+
     /**
     * Create new database connection
     *
@@ -59,10 +59,10 @@
     * @throws DBAdapterDnx
     */
     static function connect($adapter, $params, $connection_name = null) {
-      $connection_name = is_null($connection_name) || trim($connection_name) == '' ? 
-        self::PRIMARY_CONNECTION_ID : 
+      $connection_name = is_null($connection_name) || trim($connection_name) == '' ?
+        self::PRIMARY_CONNECTION_ID :
         trim($connection_name);
-        
+
       $adapter = self::connectAdapter($adapter, $params);
       if (($adapter instanceof AbstractDBAdapter) && $adapter->isConnected()) {
         self::$connections[$connection_name] = $adapter;
@@ -70,9 +70,9 @@
       } else {
         return null;
       } // if
-      
+
     } // connect
-    
+
     /**
     * This function will include adapter and try to connect. In case of error DBConnectError will be thrown
     *
@@ -82,28 +82,32 @@
     * @return AbstractDBAdapter
     * @throws DBAdapterDnx
     * @throws DBConnectError
+    *
+    * Note: Moved from 'private' to 'static' (gwyneth 20210411)
     */
-    private function connectAdapter($adapter_name, $params) {
-      
+    static function connectAdapter($adapter_name, $params) {
+
       self::useAdapter($adapter_name);
-      
+
       $adapter_class = self::getAdapterClass($adapter_name);
       if (!class_exists($adapter_class)) {
         throw new DBAdapterDnx($adapter_name, $adapter_class);
       } // if
-      
+
       return new $adapter_class($params);
-      
+
     } // connectAdapter
-    
+
     /**
     * Figure out adapter location and include it
     *
     * @access public
     * @param string $adapter_class
     * @return void
+    *
+    * Note: Moved from 'private' to 'static' (gwyneth 20210411)
     */
-    private function useAdapter($adapter_name) {
+    static function useAdapter($adapter_name) {
       $adapter_class = self::getAdapterClass($adapter_name);
       $path = dirname(__FILE__) . "/adapters/$adapter_class.class.php";
       if (!is_readable($path)) {
@@ -111,22 +115,24 @@
       } // if
       include_once $path;
     } // useAdapter
-    
+
     /**
     * Return class based on adapter name
     *
     * @access public
     * @param string $adapter_name
     * @return string
+    *
+    * Note: Moved from 'private' to 'static' (gwyneth 20210411)
     */
-    private function getAdapterClass($adapter_name) {
+    static function getAdapterClass($adapter_name) {
       return Inflector::camelize($adapter_name) . 'DBAdapter';
     } // getAdapterClass
-    
+
     // ---------------------------------------------------
     //  Interface to primary adapter
     // ---------------------------------------------------
-    
+
     /**
     * Try to execute query, ignore the result
     *
@@ -157,10 +163,10 @@
       $arguments = func_get_args();
       array_shift($arguments);
       $arguments = count($arguments) ? array_flat($arguments) : null;
-      
+
       return self::connection()->execute($sql, $arguments);
     } // execute
-    
+
     /**
     * Execute query and return first row from result
     *
@@ -173,10 +179,10 @@
       $arguments = func_get_args();
       array_shift($arguments);
       $arguments = count($arguments) ? array_flat($arguments) : null;
-      
+
       return self::connection()->executeOne($sql, $arguments);
     } // executeOne
-    
+
     /**
     * Execute query and return all rows
     *
@@ -189,10 +195,10 @@
       $arguments = func_get_args();
       array_shift($arguments);
       $arguments = count($arguments) ? array_flat($arguments) : null;
-      
+
       return self::connection()->executeAll($sql, $arguments);
     } // executeAll
-    
+
     /**
     * Start transaction
     *
@@ -204,7 +210,7 @@
     static function beginWork() {
       return self::connection()->beginWork();
     } // beginWork
-    
+
     /**
     * Commit transaction
     *
@@ -216,7 +222,7 @@
     static function commit() {
       return self::connection()->commit();
     } // commit
-    
+
     /**
     * Rollback transaction
     *
@@ -228,7 +234,7 @@
     static function rollback() {
       return self::connection()->rollback();
     } // rollback
-    
+
     /**
     * Return insert ID
     *
@@ -239,7 +245,7 @@
     static function lastInsertId() {
       return self::connection()->lastInsertId();
     } // lastInsertId
-    
+
     /**
     * Return number of affected rows
     *
@@ -250,7 +256,7 @@
     static function affectedRows() {
       return self::connection()->affectedRows();
     } // affectedRows
-    
+
     /**
     * Escape value
     *
@@ -261,7 +267,7 @@
     static function escape($value) {
       return self::connection()->escapeValue($value);
     } // escape
-    
+
     /**
     * Escape field / table name
     *
@@ -272,7 +278,7 @@
     static function escapeField($field) {
       return self::connection()->escapeField($field);
     } // escapeField
-    
+
     /**
     * Prepare string. Replace every '?' with matching escaped value
     *
@@ -288,11 +294,11 @@
       } // if
       return $sql;
     } // prepareString
-    
+
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
-    
+
     /**
     * Get primary_connection
     *
@@ -303,7 +309,7 @@
     static function getPrimaryConnection() {
       return self::$primary_connection;
     } // getPrimaryConnection
-    
+
     /**
     * Set primary_connection value
     *
@@ -318,29 +324,33 @@
       } // if
       self::$primary_connection = $value;
     } // setPrimaryConnection
-    
+
     /**
     * Add query to SQL log
     *
     * @access public
     * @param string $sql
     * @return void
+    *
+    * Note: Moved to 'static' (gwyneth 20210411)
     */
-    function addToSQLLog($sql) {
+    static function addToSQLLog($sql) {
       self::$sql_log[] = $sql;
     } // addToSQLLog
-    
+
     /**
     * Return SQL log
     *
     * @access public
     * @param void
     * @return array
+    *
+    * Note: Moved to 'static' (gwyneth 20210411)
     */
-    function getSQLLog() {
+    static function getSQLLog() {
       return self::$sql_log;
     } // getSQLLog
-  
+
   } // DB
 
 ?>
