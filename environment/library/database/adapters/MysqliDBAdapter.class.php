@@ -33,8 +33,8 @@
       } catch (mysqli_sql_exception $e) {
         throw new DBConnectError($host, $user, $pass, $database, $e->errorMessage());
       } // try-catch
-      if (!is_resource($link)) {  // should have been caught before, but if it isn't... (gwyneth 20210410)
-        throw new DBConnectError($host, $user, $pass, $database, "Uncaught error when connecting to database $database; returned a non-resource");
+      if ($link === false) {  // should have been caught before, but if it isn't... (gwyneth 20210410)
+        throw new DBConnectError($host, $user, $pass, $database, "Uncaught error when connecting to database $database; mysqli_connect() returned false");
       } // if
 
       /* Set the desired charset after establishing a connection */

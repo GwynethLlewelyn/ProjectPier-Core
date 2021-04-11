@@ -434,7 +434,7 @@
       $repository_id = $content;
       $repo_table = TABLE_PREFIX.'file_repo';
       $link = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-      if (!is_resource($link)) header("X-ProjectPier-Storage-Fail: database error");
+      if (!is_resource($link) || !is_object($link)) header("X-ProjectPier-Storage-Fail: database error");
       $query = sprintf("SELECT `content`, `seq` FROM $repo_table WHERE `id`='%s' order by `seq` asc", mysqli_real_escape_string($link, $repository_id));
       trace(__FILE__, $query);
       header("X-ProjectPier-Debug1: " . $query);

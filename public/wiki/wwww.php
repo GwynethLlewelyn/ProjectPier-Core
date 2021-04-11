@@ -25,7 +25,7 @@ function do_textile($text) {
 * @return string
 */
 function pp_pages($link) {
-  if (!is_resource($link)) return "Error: No database connection!";
+  if ($link === false) return "Error: No database connection!";
   $pages = array();
   $prefix = str_replace('_', '_', DB_PREFIX);
   $sql = "SELECT a.`project_index`, c.`id` as project_id, a.`id` as page_id, c.`name` as project_name, b.`name` as page_name FROM `{$prefix}wiki_pages` a, `{$prefix}wiki_revisions` b, `{$prefix}projects` c WHERE a.`id` = b.`page_id` and a.`revision` = b.`revision` and a.`project_id` = c.`id` and a.`publish` = 1 order by b.`name`";
@@ -49,7 +49,7 @@ function pp_pages($link) {
 * @return string
 */
 function pp_page($link, $project_id, $page_id) {
-  if (!is_resource($link)) return "Error: No database connection!";
+  if ($link === false) return "Error: No database connection!";
   $content = array();
   $prefix = str_replace('_', '_', DB_PREFIX);
   $sql = "SELECT b.*, c.`name` as project_name, b.`name` as page_name FROM `{$prefix}wiki_pages` a, `{$prefix}wiki_revisions` b, `{$prefix}projects` c WHERE a.`id` = b.`page_id` and a.`revision` = b.`revision` and a.`project_id` = $project_id and a.`id` = $page_id and a.`project_id` = c.`id` and a.`publish` = 1 LIMIT 1";
@@ -114,6 +114,9 @@ function pp_wiki_links($project_id, $page_name, $content)
     } // if
   } // try
 */
+
+// It's always recommended to activate error reporting before using mysqli (gwyneth 20210411)
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 $link = mysqli_connect(DB_HOST,DB_USER,DB_PASS,DB_NAME)
     or die("Couldn't connect to database '" . DB_NAME . "' !");

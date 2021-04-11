@@ -198,7 +198,7 @@
     */
     function breakExecution($error_message) {
       $this->printMessage($error_message, true);
-      if (is_resource($this->database_connection)) {
+      if (is_resource($this->database_connection) || is_object($this->database_connection)) {
         mysqli_query($this->database_connection, 'ROLLBACK');
       } // if
       return false;

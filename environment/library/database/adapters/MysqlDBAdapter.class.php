@@ -30,7 +30,7 @@
         @mysql_pconnect($host, $user, $pass) :
         @mysql_connect($host, $user, $pass);
 
-      if (!is_resource($link)) {
+      if (!is_resource($link) || !is_object($link)) {
         throw new DBConnectError($host, $user, $pass, $database);
       } // if
 

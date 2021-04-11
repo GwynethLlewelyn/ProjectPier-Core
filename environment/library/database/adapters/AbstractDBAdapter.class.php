@@ -7,28 +7,28 @@
   * @http://www.projectpier.org/
   */
   abstract class AbstractDBAdapter {
-    
+
     /**
     * Connection resource
     *
     * @var resource
     */
     protected $link;
-    
+
     /**
     * Array of params used fro this connection
     *
     * @var array
     */
     protected $connection_params;
-    
+
     /**
     * Name of the database we are connected on
     *
     * @var string
     */
     protected $database_name;
-    
+
     /**
     * Construct adpater and connect
     *
@@ -39,11 +39,11 @@
     function __construct($params) {
       $this->connect($params);
     } // __construct
-    
+
     // ---------------------------------------------------
     //  Abstract methods
     // ---------------------------------------------------
-  
+
     /**
     * Connect to the database based on the params array
     *
@@ -53,7 +53,7 @@
     * @throws DBConnectError
     */
     abstract protected function connect($params);
-    
+
     /**
     * Basic query execution
     *
@@ -62,7 +62,7 @@
     * @return mixed
     */
     abstract protected function executeQuery($sql);
-    
+
     /**
     * Get begin work SQL (start transaction)
     *
@@ -71,7 +71,7 @@
     * @return string
     */
     abstract function getBeginWorkCommand();
-    
+
     /**
     * Get comming SQL
     *
@@ -80,7 +80,7 @@
     * @return string
     */
     abstract function getCommitCommand();
-    
+
     /**
     * Get rollback SQL
     *
@@ -89,7 +89,7 @@
     * @return string
     */
     abstract function getRollbackCommand();
-    
+
     /**
     * Return number of affected rows
     *
@@ -98,7 +98,7 @@
     * @return integer
     */
     abstract function affectedRows();
-    
+
     /**
     * Return last insert ID
     *
@@ -107,7 +107,7 @@
     * @return integer
     */
     abstract function lastInsertId();
-    
+
     /**
     * Returns last error message that server thrown
     *
@@ -116,7 +116,7 @@
     * @return string
     */
     abstract function lastError();
-    
+
     /**
     * Returns code of the last error
     *
@@ -125,7 +125,7 @@
     * @return integer
     */
     abstract function lastErrorCode();
-    
+
     /**
     * Return array of tables that exists in database
     *
@@ -134,7 +134,7 @@
     * @return array
     */
     abstract function listTables();
-    
+
     /**
     * Drop one or more tables. If $table_names is string only that table will be droped, else script will drop
     *
@@ -143,7 +143,7 @@
     * @return boolean
     */
     abstract function dropTables($table_names);
-    
+
     /**
     * Remove all data from specific tables
     *
@@ -152,7 +152,7 @@
     * @return boolean
     */
     abstract function emptyTables($table_names);
-    
+
     /**
     * This function will return array of table names and their CREATE TABLE commands
     *
@@ -161,7 +161,7 @@
     * @return array or NULL if there are no tables in database
     */
     abstract function exportDatabaseStructure();
-    
+
     /**
     * This function is able to import database construction from any connected adapter
     *
@@ -171,7 +171,7 @@
     * @return boolean
     */
     abstract function importDatabaseStructure(AbstractDBAdapter $adapter, $clear = false);
-    
+
     /**
     * Return CREATE TABLE sql for specific table
     *
@@ -180,7 +180,7 @@
     * @return string or NULL if table does not exists
     */
     abstract function exportTableStructure($table_name);
-    
+
     /**
     * Escape name of table field or name of the table
     *
@@ -189,7 +189,7 @@
     * @return string
     */
     abstract function escapeField($field);
-    
+
     /**
     * Escape value before use it in query. This function makes difference between NULL, scalar
     * and DateTime values
@@ -199,7 +199,7 @@
     * @return string
     */
     abstract function escapeValue($unescaped);
-    
+
     /**
     * Fetch row from query result
     *
@@ -208,7 +208,7 @@
     * @return array
     */
     abstract function fetchRow($resource);
-    
+
     /**
     * Return number of rows in specific query result
     *
@@ -217,7 +217,7 @@
     * @return integer
     */
     abstract function numRows($resource);
-    
+
     /**
     * Free database result
     *
@@ -226,11 +226,11 @@
     * @return boolean
     */
     abstract function freeResult($resource);
-    
+
     // ---------------------------------------------------
     //  Commong methods
     // ---------------------------------------------------
-    
+
     /**
     * Reconnect
     *
@@ -243,7 +243,7 @@
       unset($this->database_name);
       $this->connect($this->getParams());
     } // reconnect
-    
+
     /**
     * Execute sql
     *
@@ -256,7 +256,7 @@
     function execute($sql, $arguments = null) {
       return $this->prepareAndExecute($sql, $arguments);
     } // execute
-    
+
     /**
     * Execute query and return first row. If there is no first row NULL is returned
     *
@@ -275,7 +275,7 @@
       } // if
       return null;
     } // executeOne
-    
+
     /**
     * Execute SQL and return all rows. If there is no rows NULL is returned
     *
@@ -294,7 +294,7 @@
       } // if
       return null;
     } // executeAll
-    
+
     /**
     * Start transaction
     *
@@ -306,7 +306,7 @@
     function beginWork() {
       return $this->execute($this->getBeginWorkCommand());
     } // beginWork
-    
+
     /**
     * Commit transaction
     *
@@ -318,7 +318,7 @@
     function commit() {
       return $this->execute($this->getCommitCommand());
     } // commit
-    
+
     /**
     * Rollback transaction
     *
@@ -330,7 +330,7 @@
     function rollback() {
       return $this->execute($this->getRollbackCommand());
     } // rollback
-    
+
     /**
     * This function will drop all tables from database this adapter is connected on
     *
@@ -341,7 +341,7 @@
     function clearDatabase() {
       return $this->dropTables($this->listTables());
     } // clearDatabase
-    
+
     /**
     * This function will remove all data from database keeping the structure intact
     *
@@ -352,7 +352,7 @@
     function emptyDatabase() {
       return $this->emptyTables($this->listTables());
     } // emptyDatabase
-    
+
     /**
     * Prepare SQL and execute it...
     *
@@ -365,17 +365,17 @@
       if (is_array($arguments)) {
         $sql = DB::prepareString($sql, $arguments);
       } // if
-      
+
       $query_result = $this->executeQuery($sql, $this->link);
       DB::addToSQLLog($sql);
-      
+
       if ($query_result === false) {
         throw new DBQueryError($sql, $this->lastErrorCode(), $this->lastError());
       } // if
       return $query_result === true ? true : new DBResult($this, $query_result);
-      
+
     } // prepareAndExecute
-    
+
     /**
     * Returns true if this adapter is connected to the database
     *
@@ -384,9 +384,9 @@
     * @return boolean
     */
     function isConnected() {
-      return is_resource($this->link);
+      return is_resource($this->link) || is_object($this_link);
     } // isConnected
-    
+
     /**
     * Return link
     *
@@ -396,7 +396,7 @@
     function getLink() {
       return $this->link;
     } // getLink
-    
+
     /**
     * Set connection link
     *
@@ -405,11 +405,11 @@
     * @return null
     */
     protected function setLink($link) {
-      if (is_resource($link)) {
+      if (is_resource($link) || is_object($link)) {
         $this->link = $link;
       } // if
     } // setLink
-    
+
     /**
     * Get params
     *
@@ -420,7 +420,7 @@
     function getParams() {
       return $this->params;
     } // getParams
-    
+
     /**
     * Set params value
     *
@@ -431,7 +431,7 @@
     function setParams($value) {
       $this->params = $value;
     } // setParams
-    
+
     /**
     * Get database_name
     *
@@ -442,7 +442,7 @@
     function getDatabaseName() {
       return $this->database_name;
     } // getDatabaseName
-    
+
     /**
     * Set database_name value
     *
@@ -453,7 +453,7 @@
     protected function setDatabaseName($value) {
       $this->database_name = $value;
     } // setDatabaseName
-  
+
   } // AbstractDBAdapter
 
 ?>

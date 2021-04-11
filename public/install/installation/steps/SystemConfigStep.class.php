@@ -139,7 +139,7 @@
     */
     function breakExecution($error_message) {
       $this->addToChecklist($error_message, false);
-      if (is_resource($this->database_connection)) {
+      if (is_resource($this->database_connection) || is_object($this->database_connection)) {
         mysqli_query($this->database_connection, 'ROLLBACK');
       }
       $this->setContentFromTemplate('finish.php');
