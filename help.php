@@ -1,5 +1,5 @@
 <?php
-  echo '<xmp>';
+  echo '<pre>';
 
   function check_directory($d) {
     echo "\nDirectory $d\n";

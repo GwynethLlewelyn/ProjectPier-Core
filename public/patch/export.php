@@ -91,5 +91,5 @@ foreach($dbtypes_not_translated as $attributes) {
 }
 
 file_put_contents('export.txt', $s);
-echo "<xmp>$s</xmp>";
+echo "<pre>$s</pre>";
 ?>

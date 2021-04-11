@@ -2,7 +2,7 @@
 <?php
 $file = null;
 $directory = getcwd();
-echo '<xmp>';
+echo '<pre>';
 $rit = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory), RecursiveIteratorIterator::CHILD_FIRST);
 try {
   $count = 0;

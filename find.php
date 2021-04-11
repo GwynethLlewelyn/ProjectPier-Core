@@ -4,7 +4,7 @@ $str = 'Container';
 $file = null;
 $directory = getcwd();
 $directory = './';
-echo '<xmp>';
+echo '<pre>';
 $rit = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory), RecursiveIteratorIterator::CHILD_FIRST);
 try {
   $count = 0;

@@ -4,7 +4,7 @@ $themes = array();
 $files = array();
 $directory = './public/assets/themes';
 echo "<html><a href='?download'>Download</a>";
-echo '<xmp>';
+echo '<pre>';
 foreach (new DirectoryIterator($directory) as $fileInfo) {
     if($fileInfo->isDot()) continue;
     if($fileInfo->isFile()) continue;

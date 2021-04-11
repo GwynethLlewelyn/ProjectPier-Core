@@ -5,7 +5,7 @@
   *
   * This class is template wrapper, responsible for forwarding variables to the
   * templates and including them.
-  * 
+  *
   * @version 1.0
   * @http://www.projectpier.org/
   */
@@ -17,14 +17,14 @@
      * @var Object
      */
     private static $_instance;
-    
+
     /**
     * Array of template variables
     *
     * @var array
     */
     private $vars = array();
-    
+
     /**
     * Assign specific variable to the template
     *
@@ -40,11 +40,11 @@
       $this->vars[$trimmed] = $value;
       return true;
     } // assign
-    
+
     /**
     * Display template and return output as string
     *
-    * @param string $template Template path (absolute path or path relative to 
+    * @param string $template Template path (absolute path or path relative to
     *   the templates dir)
     * @return string
     * @throws FileDnxError
@@ -55,12 +55,12 @@
         $this->includeTemplate($template);
       } catch(Exception $e) {
         ob_end_clean();
-        die("<xmp>$e</xmp>");
+        die("<pre>$e</pre>");
         //throw $e;
       } // try
       return ob_get_clean();
     } // fetch
-    
+
     /**
     * Display template
     *
@@ -71,7 +71,7 @@
     function display($template) {
       return $this->includeTemplate($template);
     } // display
-    
+
     /**
     * Include specific template
     *
@@ -87,7 +87,7 @@
         throw new FileDnxError($template, "Template '$template' doesn't exists");
       } // if
     } // includeTemplate
-    
+
     /**
     * Return template service instance
     *
@@ -100,7 +100,7 @@
       }
       return self::$_instance;
     } // instance
-  
+
   } // Template
 
 ?>
