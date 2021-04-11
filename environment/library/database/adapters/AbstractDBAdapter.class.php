@@ -384,7 +384,7 @@
     * @return boolean
     */
     function isConnected() {
-      return is_resource($this->link) || is_object($this_link);
+      return is_resource($this->link) || is_object($this->link);
     } // isConnected
 
     /**
