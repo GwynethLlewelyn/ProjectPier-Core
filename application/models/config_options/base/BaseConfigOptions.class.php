@@ -39,11 +39,31 @@
     */
     // static $coInstance; // we'll try to have only _one_ instance , to save memory!
 
+    /**
+    * Counter to prevent instantiation loops
+    *
+    * @var integer
+    * @static
+    *
+    * @author Gwyneth Llewelyn
+    */
     public static $count = 0;
+
+    /**
+    * Location of internal log file
+    * We cannot use the standard logging procedure because currently it's entering a loop
+    *  that consumes all memory before crashing with a 503  (gwyneth 20210412)
+    *
+    * @const string
+    * @static
+    *
+    * @author Gwyneth Llewelyn
+    */
     public const BASECONFIGOPTIONS_CONSTRUCT_LOG = ROOT . "/cache/BaseConfigOptions.log";
 
     /**
     * Construct
+    * Includes preventing too many instances being created in an endless loop. (gwyneth 20210412)
     *
     * @return BaseConfigOptions
     */
@@ -64,11 +84,11 @@
       } catch(exception $e) {
         error_log("BaseConfigOptions::__construct() threw an error after " . BaseConfigOptions::$count . " run(s): " . $e->getMessage());
       }
-    } // __construct
+    } // end func __construct
 
     /**
     * Destructor
-    * Used only for debugging purposes; diminishes the counters
+    * Used only for debugging purposes; decrements the counters
     *
     * @param void
     * @return void
@@ -82,7 +102,7 @@
       if ((BaseConfigOptions::$count % 100000 == 0)) {
         error_log("BaseConfigOptions::__destruct called; # of instances is now " . BaseConfigOptions::$count);
       }
-    }
+    } // end func __destructor
 
     // -------------------------------------------------------
     //  Description methods
@@ -317,13 +337,19 @@
     */
     static function instance() {
       static $instance;
-      if (!instance_of($instance, 'ConfigOptions')) {
-        file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::instance() called, and we need to create a new ConfigOptions instance" . PHP_EOL, FILE_APPEND | LOCK_EX);
-        try {
-          $instance = new ConfigOptions();
-        } catch(exception $e) {
-          error_log("BaseConfigOptions::instance() threw an error when creating a new ConfigOptions object: " . $e->getMessage());
+
+        if (BaseConfigOptions::$count > 100000) {
+          file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tCome on, we have over 100,000 BaseConfigOptions instances now, enough is enough!! Returning null" . PHP_EOL, FILE_APPEND | LOCK_EX);
           return null;
+        }
+//      if (!instance_of($instance, 'ConfigOptions')) {
+        if (!($instance instanceof ConfigOptions)) {
+          file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::instance() called, and we need to create a new ConfigOptions instance; so far, we have created " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
+          try {
+            $instance = new ConfigOptions();
+          } catch(exception $e) {
+            error_log("BaseConfigOptions::instance() threw an error when creating a new ConfigOptions object after #" . BaseConfigOptions::$count . " runs: " . $e->getMessage());
+            return null;
         }
       } // if
       return $instance;
