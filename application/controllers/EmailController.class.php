@@ -1,4 +1,5 @@
 <?php
+  include_once("../functions.php");  // to get access to mb_encode() (gwyneth 20210411)
 
   /**
   * Email controller is used for handling incoming emails
@@ -7,7 +8,7 @@
   * @http://www.projectpier.org/
   */
   class EmailController extends Controller {
-    
+
     /**
     * The message lines
     *
@@ -41,7 +42,7 @@
         $user = $_POST['from'];
         //$sql = "insert into " . DB_PREFIX . "`email_in` (created_by, raw) values (";
         $sql = "insert into `PP086_email_in` (created_by, raw) values (";
-        $sql .= "'$user', '" . mysql_real_escape_string( $_POST['message'] ) . "')";
+        $sql .= "'$user', '" . mb_escape($_POST['message']) . "')";  // what is the database link? No idea. So use mb_escape() instead (gwyneth 20210411)
         DB::execute($sql);
         //ApplicationLogs::createLog('new email received', null, ApplicationLogs::ACTION_ADD);
         DB::commit();
@@ -54,7 +55,7 @@
       header('Status: 404 Not Found');
       die();
     }
-  
+
   } // EmailController
 
 ?>
