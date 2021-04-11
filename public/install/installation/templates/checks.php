@@ -4,9 +4,9 @@
 <ul>
 <?php foreach ($checklist as $checklist_item) { ?>
 <?php if ($checklist_item->getChecked()) { ?>
-  <li class="success">OK: <?php echo clean($checklist_item->getMessage()) ?></li>
+  <li class="success">☑️&nbsp;OK:&nbsp;<?php echo clean($checklist_item->getMessage()) ?></li>
 <?php } else { ?>
-  <li class="error"><?php echo clean($checklist_item->getMessage()) ?></li>
+  <li class="error">❌&nbsp;<?php echo clean($checklist_item->getMessage()) ?></li>
 <?php } // if ?>
 <?php } // foreach ?>
 </ul>
