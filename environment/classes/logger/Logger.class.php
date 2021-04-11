@@ -84,7 +84,8 @@
       } // if
 
       try {
-        $loggerEntryResult = $session->addEntry(new Logger_Entry($message_to_log, $severity));
+        $aLogEntry = new Logger_Entry($message_to_log, $severity);
+        $loggerEntryResult = $session->addEntry($aLogEntry);
       } catch(exception $e) {
         log_error("Failed to log entry; error was " . $e->getMessage());
         return false;

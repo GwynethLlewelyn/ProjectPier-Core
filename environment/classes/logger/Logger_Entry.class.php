@@ -32,25 +32,47 @@
     /**
     * Counter to give an idea on how many times this is being called and _not_ destoyed
     *
-    * @var float
+    * @var integer
+    * @author Gwyneth Llewelyn
     */
     public static $count=0;
 
     /**
     * Constructor
     *
-    * @param void
+    * @param string $message to log
+    * @param integer $severity for this message
     * @return Logger_Entry
     */
-    function __construct($message, $severity = Logger::DEBUG) {
+    public function __construct($message, $severity = Logger::DEBUG) {
+      Logger_Entry::$count++;  // just to see how often this is called (gwyneth 20210411)
       try {
+        if (Logger_Entry::$count % 1000) {
+          error_log("Logger_Entry instanciated " . Logger_Entry::$count . " times so far.");
+        }
         $this->setMessage($message);
         $this->setSeverity($severity);
         $this->setCreatedOn(microtime(true));
       } catch(exception $e) {
-        error_log("Logger_Entry::__construct() threw an error: " . $e->getMessage());
+        error_log("Logger_Entry::__construct() threw an error after " . Logger_Entry::$count . " run(s): " . $e->getMessage());
       }
     } // __construct
+
+    /**
+    * Destructor
+    * Used only for debugging purposes; diminishes the counters
+    *
+    * @param void
+    * @return void
+    *
+    * @author Gwyneth Llewelyn
+    */
+    public function __destruct() {
+      Logger_Entry::$count--;
+      if ((Logger_Entry::$count % 1000)) {
+        error_log("Logger_Entry::__destruct called; # of instances is now " . Logger_Entry::$count);
+      }
+    }
 
     /**
     * Return formated message
