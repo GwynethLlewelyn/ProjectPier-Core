@@ -159,9 +159,14 @@
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::find($arguments);
       } else {
-        return ConfigOptions::instance()->find($arguments);
-        //$instance =& ConfigOptions::instance();
-        //return $instance->find($arguments);
+        //return ConfigOptions::instance()->find($arguments);
+        try {
+          $instance =& ConfigOptions::instance();
+        } catch(exception $e) {
+          error_log("Cannot create new instance, error was: " . $e->getMessage());
+          return null;
+        }
+        return $instance->find($arguments);
       } // if
     } // find
 
@@ -176,9 +181,14 @@
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::findAll($arguments);
       } else {
-        return ConfigOptions::instance()->findAll($arguments);
-        //$instance =& ConfigOptions::instance();
-        //return $instance->findAll($arguments);
+        //return ConfigOptions::instance()->findAll($arguments);
+      try {
+        $instance =& ConfigOptions::instance();
+      } catch(exception $e) {
+        error_log("Cannot create new instance, error was: " . $e->getMessage());
+        return null;
+      }
+      return $instance->findAll($arguments);
       } // if
     } // findAll
 
@@ -193,9 +203,14 @@
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::findOne($arguments);
       } else {
-        return ConfigOptions::instance()->findOne($arguments);
-        //$instance =& ConfigOptions::instance();
-        //return $instance->findOne($arguments);
+        //return ConfigOptions::instance()->findOne($arguments);
+        try {
+          $instance =& ConfigOptions::instance();
+        } catch(exception $e) {
+          error_log("Cannot create new instance, error was: " . $e->getMessage());
+          return null;
+        }
+        return $instance->findOne($arguments);
       } // if
     } // findOne
 
@@ -211,9 +226,14 @@
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::findById($id, $force_reload);
       } else {
-        return ConfigOptions::instance()->findById($id, $force_reload);
-        //$instance =& ConfigOptions::instance();
-        //return $instance->findById($id, $force_reload);
+        //return ConfigOptions::instance()->findById($id, $force_reload);
+        try {
+          $instance =& ConfigOptions::instance();
+        } catch(exception $e) {
+          error_log("Cannot create new instance, error was: " . $e->getMessage());
+          return null;
+        }
+        return $instance->findById($id, $force_reload);
       } // if
     } // findById
 
@@ -228,9 +248,14 @@
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::count($condition);
       } else {
-        return ConfigOptions::instance()->count($condition);
-        //$instance =& ConfigOptions::instance();
-        //return $instance->count($condition);
+        //return ConfigOptions::instance()->count($condition);
+        try {
+          $instance =& ConfigOptions::instance();
+        } catch(exception $e) {
+          error_log("Cannot create new instance, error was: " . $e->getMessage());
+          return null;
+        }
+        return $instance->count($condition);
       } // if
     } // count
 
@@ -245,9 +270,14 @@
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::delete($condition);
       } else {
-        return ConfigOptions::instance()->delete($condition);
-        //$instance =& ConfigOptions::instance();
-        //return $instance->delete($condition);
+        //return ConfigOptions::instance()->delete($condition);
+        try {
+          $instance =& ConfigOptions::instance();
+        } catch(exception $e) {
+          error_log("Cannot create new instance, error was: " . $e->getMessage());
+          return null;
+        }
+        return $instance->delete($condition);
       } // if
     } // delete
 
@@ -269,9 +299,14 @@
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::paginate($arguments, $items_per_page, $current_page);
       } else {
-        return ConfigOptions::instance()->paginate($arguments, $items_per_page, $current_page);
-        //$instance =& ConfigOptions::instance();
-        //return $instance->paginate($arguments, $items_per_page, $current_page);
+        //return ConfigOptions::instance()->paginate($arguments, $items_per_page, $current_page);
+        try {
+          $instance =& ConfigOptions::instance();
+        } catch(exception $e) {
+          error_log("Cannot create new instance, error was: " . $e->getMessage());
+          return null;
+        }
+        return $instance->paginate($arguments, $items_per_page, $current_page);
       } // if
     } // paginate
 
@@ -284,7 +319,12 @@
       static $instance;
       if (!instance_of($instance, 'ConfigOptions')) {
         file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::instance() called, and we need to create a new ConfigOptions instance" . PHP_EOL, FILE_APPEND | LOCK_EX);
-        $instance = new ConfigOptions();
+        try {
+          $instance = new ConfigOptions();
+        } catch(exception $e) {
+          error_log("BaseConfigOptions::instance() threw an error when creating a new ConfigOptions object: " . $e->getMessage());
+          return null;
+        }
       } // if
       return $instance;
 
