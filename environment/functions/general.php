@@ -421,7 +421,7 @@
   * @return null
   */
   function fix_input_quotes() {
-    if (get_magic_quotes_gpc()) {
+    if (function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) {
       array_stripslashes($_GET);
       array_stripslashes($_POST);
       array_stripslashes($_COOKIE);
