@@ -41,6 +41,12 @@
         '/cache',
         '/upload'
       ); // array
+      // We ought to use the system's defined path for saving sessions, because it might be in a place
+      //  where it's not normally accesible by the web server (good practice!)
+      //  In this case, we ought to check that we can write to it (gwyneth 20210411)
+      if !empty(ini_get('session.save_path')) {
+        array_push($this->check_is_writable, ini_get('session.save_path'));
+      } // if
 
       $this->check_extensions = array(
         'session' => true,
@@ -50,6 +56,7 @@
         'simplexml' => false,
         'ldap' => false,
         'sockets' => false,
+        'curl' => false        // not strictly necessary, but useful to have (gwyneth 20210411)
       ); // array
 
     } // __construct
@@ -68,7 +75,7 @@
       if (version_compare(PHP_VERSION, '5.6', 'ge')) {  // bumping version
         $this->addToChecklist('PHP version is ' . PHP_VERSION, true);
       } else {
-        $this->addToChecklist('Error: PHP version on this system is ' . PHP_VERSION . '. PHP 5.0.2 or newer is required', false);
+        $this->addToChecklist('Error: PHP version on this system is ' . PHP_VERSION . '. PHP 5.6 or newer is required', false);
         $all_ok = false;
       } // if
 
