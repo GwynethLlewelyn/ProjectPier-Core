@@ -141,7 +141,7 @@
       if (mysqli_query($this->database_connection, "ALTER TABLE `$users_table` MODIFY COLUMN `timezone` FLOAT(3,1) NOT NULL DEFAULT '0.0'")) {
         $this->printMessage('Users table has been updated');
       } else {
-        $this->printMessage('Failed to update users table. MySQL said: ' . mysqli_connect()_error($this->database_connection), true);
+        $this->printMessage('Failed to update users table. MySQL said: ' . mysqli_error($this->database_connection), true);
         return false;
       }
       $companies_table = TABLE_PREFIX . 'companies';
