@@ -46,8 +46,8 @@
   //
   // All users on web hosting should choose an dir below the HTTP directory struct, but within their user area to store the session files.
   //
-  if (empty(ini_get('session.save_path'))) ini_set('session.save_path',ROOT . '/tmp');
-  ini_set('session.gc_probability', 1);
+  if (empty(ini_get('session.save_path'))) @ini_set('session.save_path',ROOT . '/tmp');
+  @ini_set('session.gc_probability', 1);
 
   if (empty(ini_get('session.auto_start')) || ini_get('session.auto_start') == 0 || (strtolower(ini_get('session.auto_start')) == 'off')) {
     if(empty(session_id())) session_regenerate_id();
