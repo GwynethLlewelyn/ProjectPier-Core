@@ -64,10 +64,12 @@
     * Log a message (this will create a Logger_Entry in $session_name session - NULL for default session)
     *
     * @param string $message
+    * @param integer $severity
+    * @param string $session_name is set to DEFAULT_SESSION_NAME by default
     * @return boolean
     * @throws InvalidParamError If we don't get session by $session_name
     */
-    static function log($message, $severity = Logger::DEBUG, $session_name = null) {
+    static function log($message, $severity = Logger::DEBUG, $session_name = Logger::DEFAULT_SESSION_NAME) {
       if (!self::$enabled) {
         return false;
       } // if

@@ -47,7 +47,7 @@
     public function __construct($message, $severity = Logger::DEBUG) {
       Logger_Entry::$count++;  // just to see how often this is called (gwyneth 20210411)
       try {
-        if (Logger_Entry::$count % 1000) {
+        if (Logger_Entry::$count % 10000 == 0) {
           error_log("Logger_Entry instanciated " . Logger_Entry::$count . " times so far.");
         }
         $this->setMessage($message);
@@ -69,7 +69,7 @@
     */
     public function __destruct() {
       Logger_Entry::$count--;
-      if ((Logger_Entry::$count % 1000)) {
+      if ((Logger_Entry::$count % 10000 == 0)) {
         error_log("Logger_Entry::__destruct called; # of instances is now " . Logger_Entry::$count);
       }
     }
