@@ -43,7 +43,11 @@
   * @return null
   */
   function __shutdown() {
-    $logger_session = Logger::getSession();
+    try {
+      $logger_session = Logger::getSession();
+    } catch(exception $e) {
+      error_log(__FILE__ . "(" . __LINE__ . "): ProjectPier shutdown function error (not enough memory?); error was ". $e->getMessage());
+    }
     if (($logger_session instanceof Logger_Session) && !$logger_session->isEmpty()) {
       Logger::saveSession();
     } // if

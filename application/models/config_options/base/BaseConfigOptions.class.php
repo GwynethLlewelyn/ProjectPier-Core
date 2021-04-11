@@ -16,9 +16,31 @@
     * @var array
     * @static
     */
-    static private $columns = array('id' => DATA_TYPE_INTEGER, 'category_name' => DATA_TYPE_STRING, 'name' => DATA_TYPE_STRING, 'value' => DATA_TYPE_STRING, 'config_handler_class' => DATA_TYPE_STRING, 'is_system' => DATA_TYPE_BOOLEAN, 'option_order' => DATA_TYPE_INTEGER, 'dev_comment' => DATA_TYPE_STRING);
+    static private $columns = array(
+      'id'                    => DATA_TYPE_INTEGER,
+      'category_name'         => DATA_TYPE_STRING,
+      'name'                  => DATA_TYPE_STRING,
+      'value'                 => DATA_TYPE_STRING,
+      'config_handler_class'  => DATA_TYPE_STRING,
+      'is_system'             => DATA_TYPE_BOOLEAN,
+      'option_order'          => DATA_TYPE_INTEGER,
+      'dev_comment'           => DATA_TYPE_STRING
+    );
 
-    static $instance;
+    /**
+    * Statically defined instance of a ConfigOption
+    * This is probably needed because we're running out of memory!
+    * To be reverted if we figure out where the problem is (gwyneth 20210411)
+    *
+    * @var object
+    * @static
+    *
+    * @author Gwyneth Llewelyn
+    */
+    // static $coInstance; // we'll try to have only _one_ instance , to save memory!
+
+    public static $count = 0;
+    public const BASECONFIGOPTIONS_CONSTRUCT_LOG = ROOT . "/cache/BaseConfigOptions.log";
 
     /**
     * Construct
@@ -26,8 +48,41 @@
     * @return BaseConfigOptions
     */
     function __construct() {
-      parent::__construct('ConfigOption', 'config_options', true);
+      BaseConfigOptions::$count++;  // just to see how often this is called (gwyneth 20210411)
+      // init special logging (gwyneth 20210411)
+      if (BaseConfigOptions::$count == 1) {
+        if (file_put_contents(BaseConfigOptions::LOGGER_ENTRY_CONSTRUCT_LOG, date("c") . "\tLogging started for Logger_Entry::_construct()" . PHP_EOL . PHP_EOL, LOCK_EX) === false) {
+          error_log("Could not initialise special log for BaseConfigOptions!");
+        }
+      }
+      file_put_contents(BaseConfigOptions::LOGGER_ENTRY_CONSTRUCT_LOG, date("c") . "\t'" . $message . "' (count: " . BaseConfigOptions::$count . ")" . PHP_EOL, FILE_APPEND | LOCK_EX);
+      if (BaseConfigOptions::$count % 100000 == 0) {
+        error_log("BaseConfigOptions instanciated " . BaseConfigOptions::$count . " times so far.");
+      }
+      try {
+        parent::__construct('ConfigOption', 'config_options', true);
+      } catch(exception $e) {
+        error_log("BaseConfigOptions::__construct() threw an error after " . BaseConfigOptions::$count . " run(s): " . $e->getMessage());
+      }
     } // __construct
+
+    /**
+    * Destructor
+    * Used only for debugging purposes; diminishes the counters
+    *
+    * @param void
+    * @return void
+    *
+    * @author Gwyneth Llewelyn
+    */
+    public function __destruct() {
+      BaseConfigOptions::$count--;
+      file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tRemoving one BaseConfigOptions: " . BaseConfigOptions::$count . " left.", FILE_APPEND | LOCK_EX);
+      // TODO(gwyneth): probably we need to remove/rotate the file at some point (gwyneth 20210411)
+      if ((BaseConfigOptions::$count % 100000 == 0)) {
+        error_log("BaseConfigOptions::__destruct called; # of instances is now " . BaseConfigOptions::$count);
+      }
+    }
 
     // -------------------------------------------------------
     //  Description methods
@@ -226,15 +281,20 @@
     * @return ConfigOptions
     */
     static function instance() {
-      // static $instance;
+      static $instance;
       if (!instance_of($instance, 'ConfigOptions')) {
-        try {
-          $instance = new ConfigOptions();
-        } catch (exception $e) {
-          error_log("BaseConfigOptions::instance() threw an error when creating a new ConfigOptions object: " . $e->getMessage());
-        }
+        $instance = new ConfigOptions();
       } // if
       return $instance;
+
+      // if (empty(self::$coInstance) || !is_object(self::$coInstance) || !instance_of(self::$coInstance, 'ConfigOptions')) {
+      //   try {
+      //     self::$coInstance = new ConfigOptions();
+      //   } catch (exception $e) {
+      //     error_log("BaseConfigOptions::instance() threw an error when creating a new ConfigOptions object: " . $e->getMessage());
+      //   }
+      // } // if
+      // return self::$coInstance;
     } // instance
 
   } // ConfigOptions
