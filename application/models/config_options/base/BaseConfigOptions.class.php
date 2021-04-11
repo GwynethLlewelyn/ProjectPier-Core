@@ -161,7 +161,7 @@
       } else {
         //return ConfigOptions::instance()->find($arguments);
         try {
-          $instance =& ConfigOptions::instance();
+          $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
@@ -182,13 +182,13 @@
         return parent::findAll($arguments);
       } else {
         //return ConfigOptions::instance()->findAll($arguments);
-      try {
-        $instance =& ConfigOptions::instance();
-      } catch(exception $e) {
-        error_log("Cannot create new instance, error was: " . $e->getMessage());
-        return null;
-      }
-      return $instance->findAll($arguments);
+        try {
+          $instance = ConfigOptions::instance();
+        } catch(exception $e) {
+          error_log("Cannot create new instance, error was: " . $e->getMessage());
+          return null;
+        }
+        return $instance->findAll($arguments);
       } // if
     } // findAll
 
@@ -205,7 +205,7 @@
       } else {
         //return ConfigOptions::instance()->findOne($arguments);
         try {
-          $instance =& ConfigOptions::instance();
+          $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
@@ -228,7 +228,7 @@
       } else {
         //return ConfigOptions::instance()->findById($id, $force_reload);
         try {
-          $instance =& ConfigOptions::instance();
+          $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
@@ -250,7 +250,7 @@
       } else {
         //return ConfigOptions::instance()->count($condition);
         try {
-          $instance =& ConfigOptions::instance();
+          $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
@@ -272,7 +272,7 @@
       } else {
         //return ConfigOptions::instance()->delete($condition);
         try {
-          $instance =& ConfigOptions::instance();
+          $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
@@ -301,7 +301,7 @@
       } else {
         //return ConfigOptions::instance()->paginate($arguments, $items_per_page, $current_page);
         try {
-          $instance =& ConfigOptions::instance();
+          $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
