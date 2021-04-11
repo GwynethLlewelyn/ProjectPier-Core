@@ -245,9 +245,12 @@
     * @return boolean
     */
     function haveInnoDbSupport() {
-      if ($result = mysqli_query($this->database_connection, "SHOW VARIABLES LIKE 'have_innodb'")) {
+      // The old way of checking 'have_innodb' is deprecated since MySQL now has InnoDB as default (gwyneth 20210411)
+//    if ($result = mysqli_query($this->database_connection, "SHOW VARIABLES LIKE 'have_innodb'")) {
+    if ($result = mysqli_query($this->database_connection, "SELECT SUPPORT FROM INFORMATION_SCHEMA.ENGINES WHERE ENGINE = 'InnoDB'")) {
         if ($row = mysqli_fetch_assoc($result)) {
-          return strtolower(array_var($row, 'Value')) == 'yes';
+          $innoDBSupported = strtolower(array_var($row, 'Value'));
+          return ($innoDBSupported == 'yes' || $innoDBSupported == 'default');
         } // if
       } // if
       return false;
