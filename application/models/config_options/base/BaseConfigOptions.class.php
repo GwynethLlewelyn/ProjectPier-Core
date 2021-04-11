@@ -1,13 +1,15 @@
-<?php 
+<?php
 
-  
+
   /**
   * ConfigOptions class
   *
   * @http://www.projectpier.org/
+  *
+  * Note: Moved a lot of functions to 'static' (gwyneth 20210411)
   */
   abstract class BaseConfigOptions extends DataManager {
-  
+
     /**
     * Column name => Column type map
     *
@@ -15,20 +17,20 @@
     * @static
     */
     static private $columns = array('id' => DATA_TYPE_INTEGER, 'category_name' => DATA_TYPE_STRING, 'name' => DATA_TYPE_STRING, 'value' => DATA_TYPE_STRING, 'config_handler_class' => DATA_TYPE_STRING, 'is_system' => DATA_TYPE_BOOLEAN, 'option_order' => DATA_TYPE_INTEGER, 'dev_comment' => DATA_TYPE_STRING);
-  
+
     /**
     * Construct
     *
-    * @return BaseConfigOptions 
+    * @return BaseConfigOptions
     */
     function __construct() {
       parent::__construct('ConfigOption', 'config_options', true);
     } // __construct
-    
+
     // -------------------------------------------------------
     //  Description methods
     // -------------------------------------------------------
-    
+
     /**
     * Return array of object columns
     *
@@ -36,10 +38,10 @@
     * @param void
     * @return array
     */
-    function getColumns() {
+    static function getColumns() {
       return array_keys(self::$columns);
     } // getColumns
-    
+
     /**
     * Return column type
     *
@@ -47,14 +49,14 @@
     * @param string $column_name
     * @return string
     */
-    function getColumnType($column_name) {
+    static function getColumnType($column_name) {
       if (isset(self::$columns[$column_name])) {
         return self::$columns[$column_name];
       } else {
         return DATA_TYPE_STRING;
       } // if
     } // getColumnType
-    
+
     /**
     * Return array of PK columns. If only one column is PK returns its name as string
     *
@@ -62,10 +64,10 @@
     * @param void
     * @return array or string
     */
-    function getPkColumns() {
+    static function getPkColumns() {
       return 'id';
     } // getPkColumns
-    
+
     /**
     * Return name of first auto_incremenent column if it exists
     *
@@ -73,30 +75,30 @@
     * @param void
     * @return string
     */
-    function getAutoIncrementColumn() {
+    static function getAutoIncrementColumn() {
       return 'id';
     } // getAutoIncrementColumn
-    
+
     // -------------------------------------------------------
     //  Finders
     // -------------------------------------------------------
-    
+
     /**
     * Do a SELECT query over database with specified arguments
     *
     * @access public
     * @param array $arguments Array of query arguments. Fields:
-    * 
+    *
     *  - one - select first row
     *  - conditions - additional conditions
     *  - order - order by string
     *  - offset - limit offset, valid only if limit is present
     *  - limit
-    * 
+    *
     * @return one or ConfigOptions objects
     * @throws DBQueryError
     */
-    function find($arguments = null) {
+    static function find($arguments = null) {
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::find($arguments);
       } else {
@@ -105,7 +107,7 @@
         //return $instance->find($arguments);
       } // if
     } // find
-    
+
     /**
     * Find all records
     *
@@ -113,7 +115,7 @@
     * @param array $arguments
     * @return one or ConfigOptions objects
     */
-    function findAll($arguments = null) {
+    static function findAll($arguments = null) {
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::findAll($arguments);
       } else {
@@ -122,15 +124,15 @@
         //return $instance->findAll($arguments);
       } // if
     } // findAll
-    
+
     /**
     * Find one specific record
     *
     * @access public
     * @param array $arguments
-    * @return ConfigOption 
+    * @return ConfigOption
     */
-    function findOne($arguments = null) {
+    static function findOne($arguments = null) {
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::findOne($arguments);
       } else {
@@ -139,16 +141,16 @@
         //return $instance->findOne($arguments);
       } // if
     } // findOne
-    
+
     /**
     * Return object by its PK value
     *
     * @access public
     * @param mixed $id
     * @param boolean $force_reload If true cache will be skipped and data will be loaded from database
-    * @return ConfigOption 
+    * @return ConfigOption
     */
-    function findById($id, $force_reload = false) {
+    static function findById($id, $force_reload = false) {
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::findById($id, $force_reload);
       } else {
@@ -157,7 +159,7 @@
         //return $instance->findById($id, $force_reload);
       } // if
     } // findById
-    
+
     /**
     * Return number of rows in this table
     *
@@ -165,7 +167,7 @@
     * @param string $conditions Query conditions
     * @return integer
     */
-    function count($condition = null) {
+    static function count($condition = null) {
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::count($condition);
       } else {
@@ -174,7 +176,7 @@
         //return $instance->count($condition);
       } // if
     } // count
-    
+
     /**
     * Delete rows that match specific conditions. If $conditions is NULL all rows from table will be deleted
     *
@@ -182,7 +184,7 @@
     * @param string $conditions Query conditions
     * @return boolean
     */
-    function delete($condition = null) {
+    static function delete($condition = null) {
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::delete($condition);
       } else {
@@ -191,12 +193,12 @@
         //return $instance->delete($condition);
       } // if
     } // delete
-    
+
     /**
-    * This function will return paginated result. Result is an array where first element is 
-    * array of returned object and second populated pagination object that can be used for 
+    * This function will return paginated result. Result is an array where first element is
+    * array of returned object and second populated pagination object that can be used for
     * obtaining and rendering pagination data using various helpers.
-    * 
+    *
     * Items and pagination array vars are indexed with 0 for items and 1 for pagination
     * because you can't use associative indexing with list() construct
     *
@@ -206,7 +208,7 @@
     * @param integer $current_page Current page number
     * @return array
     */
-    function paginate($arguments = null, $items_per_page = 10, $current_page = 1) {
+    static function paginate($arguments = null, $items_per_page = 10, $current_page = 1) {
       if (isset($this) && instance_of($this, 'ConfigOptions')) {
         return parent::paginate($arguments, $items_per_page, $current_page);
       } else {
@@ -215,11 +217,11 @@
         //return $instance->paginate($arguments, $items_per_page, $current_page);
       } // if
     } // paginate
-    
+
     /**
     * Return manager instance
     *
-    * @return ConfigOptions 
+    * @return ConfigOptions
     */
     function instance() {
       static $instance;
@@ -228,7 +230,7 @@
       } // if
       return $instance;
     } // instance
-  
-  } // ConfigOptions 
+
+  } // ConfigOptions
 
 ?>
