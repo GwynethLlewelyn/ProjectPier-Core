@@ -247,12 +247,14 @@
     function haveInnoDbSupport() {
       // The old way of checking 'have_innodb' is deprecated since MySQL now has InnoDB as default (gwyneth 20210411)
 //    if ($result = mysqli_query($this->database_connection, "SHOW VARIABLES LIKE 'have_innodb'")) {
-    if ($result = mysqli_query($this->database_connection, "SELECT SUPPORT FROM INFORMATION_SCHEMA.ENGINES WHERE ENGINE = 'InnoDB'")) {
+      if ($result = mysqli_query($this->database_connection, "SELECT SUPPORT FROM INFORMATION_SCHEMA.ENGINES WHERE ENGINE = 'InnoDB'")) {
         if ($row = mysqli_fetch_assoc($result)) {
-          $innoDBSupported = strtolower(array_var($row, 'Value'));
+          $innoDBSupported = strtolower($row['SUPPORT']);
+          // error_log("DEBUG: InnoDB support is '" . $innoDBSupported . "'");
           return ($innoDBSupported == 'yes' || $innoDBSupported == 'default');
         } // if
       } // if
+      error_log("Installation error: Checking if InnoDB is present failed! Error was:" . mysqli_error($this->database_connection));
       return false;
     } // haveInnoDBSupport
 
