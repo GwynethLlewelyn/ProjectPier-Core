@@ -408,4 +408,32 @@
 
   	return json_encode($myarr);
   }
-?>
+
+  /**
+  * Returns a string with backslashes before characters that need to be escaped.
+  * As required by MySQL and suitable for multi-byte character sets
+  * Characters encoded are NUL (ASCII 0), \n, \r, \, ', ", and ctrl-Z.
+  * In addition, the special control characters % and _ are also escaped,
+  * suitable for all statements, but especially suitable for `LIKE`.
+  *
+  * Put here because sometimes we need to sanitize MySQL strings but don't know if
+  * we have an active connection to MySQL or not! (gwyneth 20210411)
+  * Source: https://www.php.net/manual/en/mysqli.real-escape-string.php#121402
+  *
+  * @param string $string String to add slashes to
+  * @return $string with `\` prepended to reserved characters
+  *
+  * @author Trevor Herselman
+  */
+  if (function_exists('mb_ereg_replace'))
+  {
+      function mb_escape(string $string)
+      {
+          return mb_ereg_replace('[\x00\x0A\x0D\x1A\x22\x25\x27\x5C\x5F]', '\\\0', $string);
+      }
+  } else {
+      function mb_escape(string $string)
+      {
+          return preg_replace('~[\x00\x0A\x0D\x1A\x22\x25\x27\x5C\x5F]~u', '\\\$0', $string);
+      }
+  }
