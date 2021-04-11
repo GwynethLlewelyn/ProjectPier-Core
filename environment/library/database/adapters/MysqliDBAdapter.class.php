@@ -38,7 +38,7 @@
       } // if
 
       /* Set the desired charset after establishing a connection */
-      mysqli_set_charset($link, 'utf8mb4mb4');  // recommended after 2020 AD (gwyneth 20210410)
+      mysqli_set_charset($link, 'utf8mb4');  // recommended after 2020 AD (gwyneth 20210410)
 
       $this->setLink($link);
       $this->setParams($params);
