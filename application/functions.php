@@ -463,7 +463,7 @@
     $currMem = memory_get_usage();
     $testMemExhausted = (boolean)($currMem < $maxMemory - MEGABYTE);
 
-    file_put_contents(MEMORY_LOG, date("c") . "\tMemory in usage: " . $currMem . "(out of" . $maxMemory . ") Memory exhausted? " . $testMemExhausted . PHP_EOL, FILE_APPEND | LOCK_EX);
+    file_put_contents(MEMORY_LOG, date("c") . "\tMemory in usage: " . $currMem . "(out of " . $maxMemory . ") Memory exhausted? " . $testMemExhausted . PHP_EOL, FILE_APPEND | LOCK_EX);
 
     return $testMemExhausted;
   }
