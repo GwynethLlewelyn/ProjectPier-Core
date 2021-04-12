@@ -79,10 +79,15 @@
       if (BaseConfigOptions::$count % 100000 == 0) {
         error_log("BaseConfigOptions::__construct() called " . BaseConfigOptions::$count . " times so far.");
       }
-      try {
-        parent::__construct('ConfigOption', 'config_options', true);
-      } catch(exception $e) {
-        error_log("BaseConfigOptions::__construct() threw an error after " . BaseConfigOptions::$count . " run(s): " . $e->getMessage());
+      if (check_memory_prevent_loop()) {
+        try {
+          parent::__construct('ConfigOption', 'config_options', true);
+        } catch(exception $e) {
+          error_log("BaseConfigOptions::__construct() threw an error after " . BaseConfigOptions::$count . " run(s): " . $e->getMessage());
+        }
+      } else {
+        file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::__construct() called, but memory exausted (" . memory_get_usage() . " out of" .
+        ini_get('memory_limit') . ") after creating " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
       }
     } // end func __construct
 
@@ -180,12 +185,18 @@
         return parent::find($arguments);
       } else {
         //return ConfigOptions::instance()->find($arguments);
-        try {
+        if (check_memory_prevent_loop()) {
+					try {
           $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
         }
+				} else {
+          file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::find() called, but memory exausted (" . memory_get_usage() . " out of" .
+          ini_get('memory_limit') . ") after creating " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
+				  return null;
+				} // if
         return $instance->find($arguments);
       } // if
     } // find
@@ -202,12 +213,18 @@
         return parent::findAll($arguments);
       } else {
         //return ConfigOptions::instance()->findAll($arguments);
-        try {
+        if (check_memory_prevent_loop()) {
+					try {
           $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
         }
+				} else {
+          file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::findAll() called, but memory exausted (" . memory_get_usage() . " out of" .
+          ini_get('memory_limit') . ") after creating " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
+				  return null;
+				} // if
         return $instance->findAll($arguments);
       } // if
     } // findAll
@@ -224,12 +241,18 @@
         return parent::findOne($arguments);
       } else {
         //return ConfigOptions::instance()->findOne($arguments);
-        try {
+        if (check_memory_prevent_loop()) {
+					try {
           $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
         }
+				} else {
+          file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::findOne() called, but memory exausted (" . memory_get_usage() . " out of" .
+          ini_get('memory_limit') . ") after creating " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
+				  return null;
+				} // if
         return $instance->findOne($arguments);
       } // if
     } // findOne
@@ -247,12 +270,18 @@
         return parent::findById($id, $force_reload);
       } else {
         //return ConfigOptions::instance()->findById($id, $force_reload);
-        try {
+        if (check_memory_prevent_loop()) {
+					try {
           $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
         }
+				} else {
+          file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::findById() called, but memory exausted (" . memory_get_usage() . " out of" .
+          ini_get('memory_limit') . ") after creating " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
+				  return null;
+				} // if
         return $instance->findById($id, $force_reload);
       } // if
     } // findById
@@ -269,12 +298,18 @@
         return parent::count($condition);
       } else {
         //return ConfigOptions::instance()->count($condition);
-        try {
+        if (check_memory_prevent_loop()) {
+					try {
           $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
         }
+				} else {
+          file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::count() called, but memory exausted (" . memory_get_usage() . " out of" .
+          ini_get('memory_limit') . ") after creating " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
+				  return null;
+				} // if
         return $instance->count($condition);
       } // if
     } // count
@@ -291,12 +326,18 @@
         return parent::delete($condition);
       } else {
         //return ConfigOptions::instance()->delete($condition);
-        try {
+        if (check_memory_prevent_loop()) {
+					try {
           $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
         }
+				} else {
+          file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::delete() called, but memory exausted (" . memory_get_usage() . " out of" .
+          ini_get('memory_limit') . ") after creating " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
+				  return null;
+				} // if
         return $instance->delete($condition);
       } // if
     } // delete
@@ -320,12 +361,18 @@
         return parent::paginate($arguments, $items_per_page, $current_page);
       } else {
         //return ConfigOptions::instance()->paginate($arguments, $items_per_page, $current_page);
-        try {
+        if (check_memory_prevent_loop()) {
+					try {
           $instance = ConfigOptions::instance();
         } catch(exception $e) {
           error_log("Cannot create new instance, error was: " . $e->getMessage());
           return null;
         }
+				} else {
+          file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::paginate() called, but memory exausted (" . memory_get_usage() . " out of" .
+          ini_get('memory_limit') . ") after creating " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
+				  return null;
+				} // if
         return $instance->paginate($arguments, $items_per_page, $current_page);
       } // if
     } // paginate
