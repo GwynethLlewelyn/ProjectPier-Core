@@ -460,9 +460,16 @@
     if ($maxMemory == 0) {
       $maxMemory = memToBytes(ini_get('memory_limit'));
     }
+    $currMem = memory_get_usage();
+    $testMemExhausted = (boolean)($currMem < $maxMemory - MEGABYTE);
 
-    return memory_get_usage() < $maxMemory - (1024 * 1024);
+    file_put_contents(MEMORY_LOG, date("c") . "\tMemory in usage: " . $currMem . "(out of" . $maxMemory . ") Memory exhausted? " . $testMemExhausted . PHP_EOL, FILE_APPEND | LOCK_EX);
+
+    return $testMemExhausted;
   }
+
+  const MEGABYTE = 1024 * 1024;
+  const MEMORY_LOG = ROOT . "/cache/memory.log";
 
   /**
   * Because ini_get('memory_limit') does _not_ return an integer, but an annotated string (e.g "12G"),
