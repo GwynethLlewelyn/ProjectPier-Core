@@ -187,9 +187,9 @@
         ob_start();
         benchmark_timer_display(false);
         $result .= '. ' . ob_get_clean();
-        if (function_exists('memory_get_usage')) {
+        //if (function_exists('memory_get_usage')) {      // guaranteed to exist since PHP 5.2
           $result .= '. ' . format_filesize(memory_get_usage());
-        } // if
+        //} // if
       } // if
       return $result;
     } else {
@@ -441,3 +441,45 @@
           return preg_replace('~[\x00\x0A\x0D\x1A\x22\x25\x27\x5C\x5F]~u', '\\\$0', $string);
       }
   }
+
+  /**
+  * Moving from PHP 4 to 5 and now to 7 and 8 has introduced a very tricky issue with objects
+  * instantiated from classes which, in turn, will call the object instantiation _again_
+  * (possibly due to the different approaches to inheritance rules in PHP 7/8).
+  * This invariably results in an 'instantiation loop' which quickly exhaust all memory.
+  * This function is a humble hack to check if enough memory is available, and, if not,
+  * log an error via the _standard_ PHP mechanism (because logging via the PP Logger
+  * _also_ requires new objects to be instantiated...
+  *
+  * @param void
+  * @return boolean
+  */
+  function check_memory_prevent_loop() {
+    static $maxMemory;  // we use it as a cache value, because a ini_get() call might consume memory too, and it's unlikely that this value will change soon...
+
+    if ($maxMemory == 0) {
+      $maxMemory = memToBytes(ini_get('memory_limit'));
+    }
+
+    return memory_get_usage() < $maxMemory - (1024 * 1024);
+  }
+
+  /**
+  * Because ini_get('memory_limit') does _not_ return an integer, but an annotated string (e.g "12G"),
+  * we need to convert it. (gwyneth 20210412)
+  *
+  * @see https://stackoverflow.com/a/4613049/1035977
+  *
+  * @param $string result of ini_get('memory_limit') (and others using the same notation)
+  * @return integer
+  *
+  * @author Sergey Toropenko (akond)
+  */
+  function memToBytes($string) {
+    sscanf ($string, '%u%c', $number, $suffix);
+    if (isset ($suffix)) {
+        $number = $number * pow (1024, strpos (' KMG', strtoupper($suffix)));
+    }
+    return $number;
+  }
+
