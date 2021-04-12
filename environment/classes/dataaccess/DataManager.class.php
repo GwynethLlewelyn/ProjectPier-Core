@@ -42,7 +42,30 @@
     private $caching = true;
 
     /**
+    * Counter to prevent instantiation loops
+    *
+    * @var integer
+    * @static
+    *
+    * @author Gwyneth Llewelyn
+    */
+    private static $count = 0;
+
+    /**
+    * Location of internal log file
+    * We cannot use the standard logging procedure because currently it's entering a loop
+    *  that consumes all memory before crashing with a 503  (gwyneth 20210412)
+    *
+    * @const string
+    * @static
+    *
+    * @author Gwyneth Llewelyn
+    */
+    public const DATAMANAGER_CONSTRUCT_LOG = ROOT . "/cache/DataManager.log";
+
+    /**
     * Construct and set item class
+    * Includes preventing too many instances being created in an endless loop. (gwyneth 20210412)
     *
     * @access public
     * @param string $item_class Value of class of items that this manager is handling
@@ -51,10 +74,48 @@
     * @return DataManager
     */
     function __construct($item_class, $table_name, $caching = true) {
-      $this->setItemClass($item_class);
-      $this->setTableName($table_name);
-      $this->setCaching($caching);
+      DataManager::$count++;  // just to see how often this is called (gwyneth 20210412)
+      // init special logging (gwyneth 20210412)
+      if (DataManager::$count == 1) {
+        if (file_put_contents(DataManager::DATAMANAGER_CONSTRUCT_LOG, date("c") . "\tLogging started for DataManager::__construct()" . PHP_EOL . PHP_EOL, LOCK_EX) === false) {
+          error_log("Could not initialise special log for DataManager!");
+        }
+      }
+      if (DataManager::$count > 100000) {
+        file_put_contents(DataManager::DATAMANAGER_CONSTRUCT_LOG, date("c") . "\tCome on, we have over 100,000 DataManager instances now, enough is enough!! Returning null" . PHP_EOL, FILE_APPEND | LOCK_EX);
+        return null;
+      }
+      file_put_contents(DataManager::DATAMANAGER_CONSTRUCT_LOG, date("c") . "\tDataManager::__construct() called " . DataManager::$count . " times so far." . PHP_EOL, FILE_APPEND | LOCK_EX);
+      if (DataManager::$count % 100000 == 0) {
+        error_log("DataManager::__construct() called " . DataManager::$count . " times so far.");
+      }
+      try {
+        // original __construct code below (gwyneth 20210412)
+        $this->setItemClass($item_class);
+        $this->setTableName($table_name);
+        $this->setCaching($caching);
+      } catch(exception $e) {
+        error_log("DataManager::__construct() threw an error after " . DataManager::$count . " run(s): " . $e->getMessage());
+      }
     } // end func __construct
+
+    /**
+    * Destructor
+    * Used only for debugging purposes; decrements the counters
+    *
+    * @param void
+    * @return void
+    *
+    * @author Gwyneth Llewelyn
+    */
+    public function __destruct() {
+      DataManager::$count--;
+      file_put_contents(DataManager::DATAMANAGER_CONSTRUCT_LOG, date("c") . "\tRemoving one DataManager: " . DataManager::$count . " left.", FILE_APPEND | LOCK_EX);
+      // TODO(gwyneth): probably we need to remove/rotate the file at some point (gwyneth 20210412)
+      if ((DataManager::$count % 100000 == 0)) {
+        error_log("DataManager::__destruct called; # of instances is now " . DataManager::$count);
+      }
+    } // end func __destructor
 
     // ---------------------------------------------------
     //  Definition methods
