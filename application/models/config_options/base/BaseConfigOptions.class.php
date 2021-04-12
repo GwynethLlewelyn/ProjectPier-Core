@@ -1,5 +1,5 @@
 <?php
-
+  require_once(ROOT . "/application/functions.php");
 
   /**
   * ConfigOptions class
@@ -345,13 +345,19 @@
 //      if (!instance_of($instance, 'ConfigOptions')) {
         if (!($instance instanceof ConfigOptions)) {
           file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::instance() called, and we need to create a new ConfigOptions instance; so far, we have created " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
-          try {
-            $instance = new ConfigOptions();
-          } catch(exception $e) {
-            error_log("BaseConfigOptions::instance() threw an error when creating a new ConfigOptions object after #" . BaseConfigOptions::$count . " runs: " . $e->getMessage());
-            return null;
-        }
-      } // if
+          if (check_memory_prevent_loop()) {
+            try {
+              $instance = new ConfigOptions();
+            } catch(exception $e) {
+              error_log("BaseConfigOptions::instance() threw an error when creating a new ConfigOptions object after #" . BaseConfigOptions::$count . " runs: " . $e->getMessage());
+              return null;
+            }
+          } else {
+            file_put_contents(BaseConfigOptions::BASECONFIGOPTIONS_CONSTRUCT_LOG, date("c") . "\tBaseConfigOptions::instance() called, but memory exausted (" . memory_get_usage() . " out of" .
+              ini_get('memory_limit') . ") after creating " . BaseConfigOptions::$count . " instance(s)." . PHP_EOL, FILE_APPEND | LOCK_EX);
+            return null;  // hopefully this is enough for this instance _not_ to be created (gwyneth 20210412)
+          }
+        } // if
       return $instance;
 
       // if (empty(self::$coInstance) || !is_object(self::$coInstance) || !instance_of(self::$coInstance, 'ConfigOptions')) {
